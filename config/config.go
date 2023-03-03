@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	cfg *Config
+)
+
 // Config represents the configuration values
 type Config struct {
 	Database   *Database `mapstructure:"database"`
@@ -22,8 +26,6 @@ type Database struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
 }
-
-var cfg *Config
 
 // LoadConfig loads the configuration values from the config file
 func LoadConfig() {

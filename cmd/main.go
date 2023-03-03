@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/huichiaotsou/go-roster/api"
+	"github.com/huichiaotsou/go-roster/cmd/api"
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/rs/cors"
 )
