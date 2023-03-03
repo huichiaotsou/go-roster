@@ -21,11 +21,11 @@ type Config struct {
 	APIVersion string `mapstructure:"apiVersion"`
 }
 
-var cfg *Config
+var Cfg *Config
 
 // LoadConfig loads the configuration values from the config file
 func LoadConfig() {
-	if cfg != nil {
+	if Cfg != nil {
 		log.Fatal("config exists")
 		return
 	}
@@ -39,7 +39,7 @@ func LoadConfig() {
 		panic(fmt.Sprintf("Error reading config file: %v", err))
 	}
 
-	err = viper.Unmarshal(&cfg)
+	err = viper.Unmarshal(&Cfg)
 	if err != nil {
 		panic(fmt.Sprintf("Error unmarshaling config file: %v", err))
 	}
