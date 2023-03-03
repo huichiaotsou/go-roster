@@ -13,10 +13,10 @@ import (
 
 func main() {
 	// initialize router
-	r := mux.NewRouter()
+	router := mux.NewRouter()
 
 	// register all routes
-	api.NewApi(r).RegisterAllRoutes()
+	api.RegisterAllRoutes(router)
 
 	// set up CORS
 	c := cors.New(cors.Options{
@@ -25,7 +25,7 @@ func main() {
 	})
 
 	// wrap router with CORS middleware
-	handler := c.Handler(r)
+	handler := c.Handler(router)
 
 	// start server
 	addr := fmt.Sprintf(":%s", config.GetServerPort())
