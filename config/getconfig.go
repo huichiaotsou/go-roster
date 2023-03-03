@@ -9,9 +9,19 @@ func GetApiVersion() string {
 
 func GetDBConfig() *Database {
 	if cfg.Database == nil {
-		return &Database{}
+		return DefaultDBConfig()
 	}
 	return cfg.Database
+}
+
+func DefaultDBConfig() *Database {
+	return &Database{
+		Host:     "localhost",
+		Port:     "9090",
+		Name:     "goroster",
+		Username: "user",
+		Password: "",
+	}
 }
 
 func GetServerPort() string {
