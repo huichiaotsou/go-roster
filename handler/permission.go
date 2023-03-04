@@ -11,7 +11,7 @@ import (
 )
 
 // User Permission
-func (h *Handler) CheckUserPermission(next http.Handler) http.Handler {
+func (h *Handler) CheckUserPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
 		_, verified := verifyToken(r)
@@ -26,7 +26,7 @@ func (h *Handler) CheckUserPermission(next http.Handler) http.Handler {
 }
 
 // Admin Permission
-func (h *Handler) CheckAdminPermission(next http.Handler) http.Handler {
+func (h *Handler) CheckAdminPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
 		if !h.adminHasPermission(r) {
