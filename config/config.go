@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/viper"
 )
@@ -30,10 +29,6 @@ type Database struct {
 
 // LoadConfig loads the configuration values from the config file
 func LoadConfig() {
-	if cfg != nil {
-		log.Fatal("config exists")
-		return
-	}
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

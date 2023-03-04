@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gorilla/mux"
@@ -9,10 +8,6 @@ import (
 	"github.com/huichiaotsou/go-roster/handler"
 	"github.com/huichiaotsou/go-roster/model"
 	"github.com/huichiaotsou/go-roster/utils"
-)
-
-var (
-	API_VERSION = fmt.Sprintf("/api/%s", config.GetApiVersion())
 )
 
 func RegisterAllRoutes(router *mux.Router) {

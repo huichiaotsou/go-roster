@@ -3,19 +3,19 @@ package api
 import (
 	"fmt"
 
+	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/handler"
 )
 
-var (
-	USER_API = API_VERSION + "/user"
-)
-
 func SetUserRoutes(h *handler.Handler) {
+	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
+	userApi := apiVersion + "/user"
+
 	// create user
-	h.Router.HandleFunc(USER_API, h.CreateUser).Methods("POST")
+	h.Router.HandleFunc(userApi, h.CreateUser).Methods("POST")
 
 	// apply CheckUserPerm middleware to the sub router userPermRouter
-	apiWithID := fmt.Sprintf(USER_API + "/{id}")
+	apiWithID := fmt.Sprintf(userApi + "/{id}")
 	userPermRouter := h.Router.PathPrefix(apiWithID).Subrouter()
 	userPermRouter.Use(h.CheckUserPerm)
 
