@@ -10,9 +10,9 @@ type Handler struct {
 	Router *mux.Router
 }
 
-func NewHandler(router *mux.Router) *Handler {
+func NewHandler(router *mux.Router, model *model.Model) *Handler {
 	return &Handler{
-		Model:  nil, // TO-DO
+		Model:  model,
 		Router: router,
 	}
 }

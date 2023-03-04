@@ -1,12 +1,15 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type Model struct {
-	// DB
 	Db *sql.DB
 }
 
-func NewModel() *Model {
-	return &Model{}
+func NewModel(db *sql.DB) *Model {
+	return &Model{
+		Db: db,
+	}
 }
