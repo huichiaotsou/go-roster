@@ -1,10 +1,11 @@
 package config
 
 func GetApiVersion() string {
-	if cfg.APIVersion == "" {
-		return "v1"
-	}
 	return cfg.APIVersion
+}
+
+func GetJwtKey() string {
+	return cfg.JwtKey
 }
 
 func GetDBConfig() *Database {

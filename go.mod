@@ -3,7 +3,9 @@ module github.com/huichiaotsou/go-roster
 go 1.18
 
 require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.7
 	github.com/rs/cors v1.8.3
 	github.com/spf13/viper v1.15.0

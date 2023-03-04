@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/huichiaotsou/go-roster/config"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-func GetDb(dbConfig *config.Database) (*sql.DB, error) {
+func GetDb(dbConfig *config.Database) (*sqlx.DB, error) {
 	// Create a database connection string
 	dbinfo := fmt.Sprintf(
 		`host=%s port=%s user=%s password=%s dbname=%s sslmode=disable`,
@@ -16,7 +16,7 @@ func GetDb(dbConfig *config.Database) (*sql.DB, error) {
 		dbConfig.Password, dbConfig.Name)
 
 	// Connect to the database
-	db, err := sql.Open("postgres", dbinfo)
+	db, err := sqlx.Open("postgres", dbinfo)
 	if err != nil {
 		return nil, fmt.Errorf("error while connecting the database: %s", err)
 	}

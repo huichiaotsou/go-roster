@@ -1,14 +1,14 @@
 package model
 
 import (
-	"database/sql"
+	"github.com/jmoiron/sqlx"
 )
 
 type Model struct {
-	Db *sql.DB
+	Db *sqlx.DB
 }
 
-func NewModel(db *sql.DB) *Model {
+func NewModel(db *sqlx.DB) *Model {
 	return &Model{
 		Db: db,
 	}

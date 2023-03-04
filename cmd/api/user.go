@@ -8,12 +8,19 @@ import (
 )
 
 func SetUserRoutes(h *handler.Handler) {
-	api := fmt.Sprintf("/api/%s/users", config.GetApiVersion())
-	h.Router.HandleFunc(api, h.CreateUser).Methods("POST")
-	h.Router.HandleFunc(api, h.ListUsers).Methods("GET")
+	// example: /api/v1/user
+	api := fmt.Sprintf("/api/%s", config.GetApiVersion())
+	userApi := api + "/user"
 
-	apiWithID := fmt.Sprintf(api + "/{id}")
-	h.Router.HandleFunc(apiWithID, h.GetUser).Methods("GET")
-	h.Router.HandleFunc(apiWithID, h.UpdateUser).Methods("PUT")
-	h.Router.HandleFunc(apiWithID, h.DeleteUser).Methods("DELETE")
+	// create user
+	h.Router.HandleFunc(userApi, h.CreateUser).Methods("POST")
+
+	// apply checkUserPermission middleware to user permission sub router
+	apiWithID := fmt.Sprintf(userApi + "/{id}")
+	userRouter := h.Router.PathPrefix(apiWithID).Subrouter()
+	userRouter.Use(h.CheckUserPermission)
+
+	// modify & delete user with user ID
+	userRouter.HandleFunc(apiWithID, h.UpdateUser).Methods("PUT")
+	userRouter.HandleFunc(apiWithID, h.DeleteUser).Methods("DELETE")
 }

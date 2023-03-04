@@ -17,6 +17,7 @@ type Config struct {
 	Port       string    `mapstructure:"port"`
 	Env        string    `mapstructure:"env"`
 	APIVersion string    `mapstructure:"apiVersion"`
+	JwtKey     string    `mapstructure:"jwtKey"`
 }
 
 type Database struct {
