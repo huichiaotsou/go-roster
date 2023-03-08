@@ -1,36 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/huichiaotsou/go-roster/cmd/api"
+	"github.com/huichiaotsou/go-roster/cmd/server"
 	"github.com/huichiaotsou/go-roster/config"
-	"github.com/rs/cors"
 )
 
 func main() {
-	// load config
-	config.LoadConfig()
+	// Load config
+	if err := config.LoadConfig(); err != nil {
+		log.Fatalf("Failed to load configuration: %s", err)
+		return
+	}
 
-	// initialize router
-	router := mux.NewRouter()
-
-	// register all routes
-	api.RegisterAllRoutes(router)
-
-	// set up CORS
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
-	})
-
-	// wrap router with CORS middleware
-	handler := c.Handler(router)
-
-	// start server
-	addr := fmt.Sprintf(":%s", config.GetServerPort())
-	log.Fatal(http.ListenAndServe(addr, handler))
+	// Start the server
+	server.NewServer().Start()
 }

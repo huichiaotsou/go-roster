@@ -50,5 +50,12 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {}
-func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {}
+func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// TO-DO
+
+}
+
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	// TO-DO
+
+}

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -28,7 +26,7 @@ type Database struct {
 }
 
 // LoadConfig loads the configuration values from the config file
-func LoadConfig() {
+func LoadConfig() error {
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -36,11 +34,13 @@ func LoadConfig() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Sprintf("Error reading config file: %v", err))
+		return err
 	}
 
 	err = viper.Unmarshal(&cfg)
 	if err != nil {
-		panic(fmt.Sprintf("Error unmarshaling config file: %v", err))
+		return err
 	}
+
+	return nil
 }
