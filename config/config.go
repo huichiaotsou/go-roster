@@ -24,8 +24,8 @@ type Database struct {
 	Username     string `mapstructure:"username"`
 	Password     string `mapstructure:"password"`
 	Schema       string `mapstructure:"schema"`
-	MaxopenConns string `mapstructure:"max_open_connections"`
-	MaxIdleConns string `mapstructure:"max_idle_connections"`
+	MaxopenConns int    `mapstructure:"max_open_connections"`
+	MaxIdleConns int    `mapstructure:"max_idle_connections"`
 }
 
 // LoadConfig loads the configuration values from the config file

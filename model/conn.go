@@ -11,9 +11,12 @@ import (
 func InitSqlx(dbConfig *config.Database) (*sqlx.DB, error) {
 	// Create a database connection string
 	dbinfo := fmt.Sprintf(
-		`host=%s port=%s user=%s password=%s dbname=%s sslmode=disable`,
+		`
+		host=%s port=%s user=%s 
+		password=%s dbname=%s sslmode=disable search_path=%s`,
 		dbConfig.Host, dbConfig.Port, dbConfig.Username,
-		dbConfig.Password, dbConfig.Name)
+		dbConfig.Password, dbConfig.Name, dbConfig.Schema,
+	)
 
 	// Connect to the database
 	sqlx, err := sqlx.Open("postgres", dbinfo)
@@ -21,6 +24,9 @@ func InitSqlx(dbConfig *config.Database) (*sqlx.DB, error) {
 		return nil, fmt.Errorf("error while connecting the database: %s", err)
 	}
 	defer sqlx.Close()
+
+	sqlx.SetMaxOpenConns(dbConfig.MaxopenConns)
+	sqlx.SetMaxIdleConns(dbConfig.MaxIdleConns)
 
 	// Test the connection
 	err = sqlx.Ping()
