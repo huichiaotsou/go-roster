@@ -89,11 +89,3 @@ func (s *Server) Start() {
 
 	s.logger.Info("Server gracefully stopped.")
 }
-
-func (s *Server) UseMiddleware(middleware func(http.Handler) http.Handler) {
-	s.router.Use(middleware)
-}
-
-func (s *Server) HandleFunc(method, path string, handlerFunc http.HandlerFunc) {
-	s.router.HandleFunc(path, handlerFunc).Methods(method)
-}
