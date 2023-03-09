@@ -14,16 +14,14 @@ func (a *APIHandler) SetUserRoutes() {
 	userApi := apiVersion + "/user"
 
 	// Handle create user
-	a.router.HandleFunc(userApi, a.CreateUser).Methods("POST")
+	a.router.HandleFunc(userApi, a.CreateUser).Methods(http.MethodPost)
 
 	// Apply CheckUserPerm middleware to the sub router userPermRouter
 	apiWithID := fmt.Sprintf(userApi + "/{id}")
 	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
 	userPermRouter.Use(a.mw.CheckUserPerm)
-
-	// Handle modify & delete user with user ID
-	userPermRouter.HandleFunc(apiWithID, a.UpdateUser).Methods("PUT")
-	userPermRouter.HandleFunc(apiWithID, a.DeleteUser).Methods("DELETE")
+	userPermRouter.HandleFunc(apiWithID, a.UpdateUser).Methods(http.MethodPut)
+	userPermRouter.HandleFunc(apiWithID, a.DeleteUser).Methods(http.MethodDelete)
 }
 
 func (a *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +39,7 @@ func (a *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	if exist {
 		http.Error(w, "email exists", http.StatusConflict)
 		return
@@ -59,14 +58,15 @@ func (a *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}{
 		UserID: userId,
 	}
-	jsonResponse, err := json.Marshal(response)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	// Write response
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	w.Write(jsonResponse)
 }
 
 func (a *APIHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
