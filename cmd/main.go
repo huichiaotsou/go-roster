@@ -1,10 +1,9 @@
 package main
 
 import (
-	"log"
-
 	"github.com/huichiaotsou/go-roster/cmd/server"
 	"github.com/huichiaotsou/go-roster/config"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {

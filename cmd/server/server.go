@@ -9,8 +9,11 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/huichiaotsou/go-roster/cmd/api"
+	"github.com/huichiaotsou/go-roster/apihandler"
 	"github.com/huichiaotsou/go-roster/config"
+	"github.com/huichiaotsou/go-roster/middleware"
+	"github.com/huichiaotsou/go-roster/model"
+	"github.com/huichiaotsou/go-roster/utils"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,23 +24,41 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	s := &Server{}
-	s.router = mux.NewRouter()
+	logger := log.New()
+	logger.SetFormatter(&log.JSONFormatter{})
+
+	router := mux.NewRouter()
+
+	s := &Server{
+		router: router,
+	}
+
+	// Initialize database
+	sqlx, err := utils.InitDb(config.GetDBConfig())
+	if err != nil {
+		logger.Fatalf("Failed to initialize database: %v", err)
+	}
+
+	db := model.NewDatabase(sqlx)
+
+	// Initialize middleware
+	middleware := middleware.New(db, logger)
+
+	// Init api handler
+	apiHandler := apihandler.New(router, logger, middleware, db)
 
 	// Register all routes
-	api.RegisterAllRoutes(s.router)
+	apiHandler.RegisterAllRoutes()
 
 	// Set up CORS
-	handler := cors.New(cors.Options{
+	cors := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}).Handler(s.router)
 
-	addr := fmt.Sprintf(":%s", config.GetServerPort())
-
 	s.srv = &http.Server{
-		Addr:         addr,
-		Handler:      handler,
+		Addr:         fmt.Sprintf(":%s", config.GetServerPort()),
+		Handler:      cors,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,

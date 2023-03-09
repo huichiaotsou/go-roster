@@ -6,9 +6,9 @@ import (
 	"github.com/huichiaotsou/go-roster/types"
 )
 
-func (m *Model) VerifyEmailExists(email string) (bool, error) {
+func (d *Database) VerifyEmailExists(email string) (bool, error) {
 	var count int
-	err := m.Db.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
+	err := d.Sql.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
 	if err != nil {
 		return false, err
 	}
@@ -18,7 +18,7 @@ func (m *Model) VerifyEmailExists(email string) (bool, error) {
 // InsertOrUpdateUser inserts or updates the provided user in the database
 // If the user already exists (based on email), it updates the existing user
 // Returns the ID of the inserted or updated user, or an error if something goes wrong
-func (m *Model) InsertOrUpdateUser(user types.User) (int64, error) {
+func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	// Define the SQL statement to insert a user and handle conflicts on email
 	query := `
         INSERT INTO users (
@@ -38,7 +38,7 @@ func (m *Model) InsertOrUpdateUser(user types.User) (int64, error) {
     `
 
 	// Prepare the statement
-	stmt, err := m.Db.PrepareNamed(query)
+	stmt, err := db.Sql.PrepareNamed(query)
 	if err != nil {
 		return 0, err
 	}
@@ -63,10 +63,10 @@ type Permission struct {
 	PermissionName string `db:"permission_name"`
 }
 
-func (m *Model) GetPermissionsByUserID(userID string) ([]Permission, error) {
+func (db *Database) GetPermissionsByUserID(userID string) ([]Permission, error) {
 	var permissions []Permission
 	query := `SELECT team_id, permission_name FROM permissions WHERE user_id=$1`
-	err := m.Db.Select(&permissions, query, userID)
+	err := db.Sql.Select(&permissions, query, userID)
 	if err != nil {
 		return nil, err
 	}

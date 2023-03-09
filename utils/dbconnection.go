@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func GetDb(dbConfig *config.Database) (*sqlx.DB, error) {
+func InitDb(dbConfig *config.Database) (*sqlx.DB, error) {
 	// Create a database connection string
 	dbinfo := fmt.Sprintf(
 		`host=%s port=%s user=%s password=%s dbname=%s sslmode=disable`,

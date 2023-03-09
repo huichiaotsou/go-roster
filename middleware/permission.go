@@ -1,4 +1,4 @@
-package handler
+package middleware
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 // User Permission
-func (h *Handler) CheckUserPerm(next http.Handler) http.Handler {
+func (m *Middleware) CheckUserPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
 		_, verified := verifyToken(r)
@@ -26,10 +26,10 @@ func (h *Handler) CheckUserPerm(next http.Handler) http.Handler {
 }
 
 // Admin Permission
-func (h *Handler) CheckAdminPerm(next http.Handler) http.Handler {
+func (m *Middleware) CheckAdminPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
-		if !h.adminHasPermission(r) {
+		if !m.adminHasPermission(r) {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
@@ -38,7 +38,7 @@ func (h *Handler) CheckAdminPerm(next http.Handler) http.Handler {
 	})
 }
 
-func (h *Handler) adminHasPermission(r *http.Request) bool {
+func (m *Middleware) adminHasPermission(r *http.Request) bool {
 	claims, verified := verifyToken(r)
 	if !verified {
 		return false
@@ -46,7 +46,7 @@ func (h *Handler) adminHasPermission(r *http.Request) bool {
 
 	// TO-DO: use userID to check admin role
 	userID := claims["user_id"].(string)
-	permissions, err := h.Model.GetPermissionsByUserID(userID)
+	permissions, err := m.Db.GetPermissionsByUserID(userID)
 	if err != nil {
 		return false
 	}
