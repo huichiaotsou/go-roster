@@ -26,19 +26,16 @@ type Database struct {
 }
 
 // LoadConfig loads the configuration values from the config file
-func LoadConfig() error {
-
+func LoadConfig() (err error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")
 
-	err := viper.ReadInConfig()
-	if err != nil {
+	if err = viper.ReadInConfig(); err != nil {
 		return err
 	}
 
-	err = viper.Unmarshal(&cfg)
-	if err != nil {
+	if err = viper.Unmarshal(&cfg); err != nil {
 		return err
 	}
 
