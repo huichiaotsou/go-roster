@@ -45,6 +45,10 @@ func (a *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Hash user password before storing
+	hashedPwd := types.HashPassword(newUser.PwdOrToken)
+	newUser.PwdOrToken = hashedPwd
+
 	// Insert new user into database
 	userId, err := a.db.InsertOrUpdateUser(newUser)
 	if err != nil {

@@ -23,7 +23,7 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	// Define the SQL statement to insert a user and handle conflicts on email
 	query := `
         INSERT INTO users (
-            first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_hash_or_token, date_of_birth, create_date
+            first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_or_token, date_of_birth, create_date
         )
         VALUES (
             $1, $2, $3, $4, $5, $6, $7, NOW()
@@ -33,14 +33,14 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
             last_name_en = EXCLUDED.last_name_en,
             first_name_zh = EXCLUDED.first_name_zh,
             last_name_zh = EXCLUDED.last_name_zh,
-            pwd_hash_or_token = EXCLUDED.pwd_hash_or_token,
+            password = EXCLUDED.password,
             date_of_birth = EXCLUDED.date_of_birth
         RETURNING id;
     `
 
 	// Execute the statement and get the generated user ID
 	var userID int64
-	err := db.Sqlx.Get(&userID, query, user.FirstNameEn, user.LastNameEn, user.FirstNameZh, user.LastNameZh, user.Email, user.PwdHashOrToken, user.DateOfBirth)
+	err := db.Sqlx.Get(&userID, query, user.FirstNameEn, user.LastNameEn, user.FirstNameZh, user.LastNameZh, user.Email, user.PwdOrToken, user.DateOfBirth)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil
