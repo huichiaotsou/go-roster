@@ -9,10 +9,10 @@ import (
 )
 
 type APIHandler struct {
-	Logger     *log.Logger
-	Router     *mux.Router
-	Middleware *middleware.Middleware
-	DB         *model.Database
+	logger *log.Logger
+	router *mux.Router
+	mw     *middleware.Middleware
+	db     *model.Database
 }
 
 func New(
@@ -22,10 +22,10 @@ func New(
 	db *model.Database,
 ) *APIHandler {
 	return &APIHandler{
-		Logger:     logger,
-		Router:     router,
-		Middleware: middleware,
-		DB:         db,
+		logger: logger,
+		router: router,
+		mw:     middleware,
+		db:     db,
 	}
 }
 

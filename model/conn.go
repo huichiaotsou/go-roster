@@ -1,4 +1,4 @@
-package utils
+package model
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func InitDb(dbConfig *config.Database) (*sqlx.DB, error) {
+func InitSqlx(dbConfig *config.Database) (*sqlx.DB, error) {
 	// Create a database connection string
 	dbinfo := fmt.Sprintf(
 		`host=%s port=%s user=%s password=%s dbname=%s sslmode=disable`,
@@ -16,17 +16,17 @@ func InitDb(dbConfig *config.Database) (*sqlx.DB, error) {
 		dbConfig.Password, dbConfig.Name)
 
 	// Connect to the database
-	db, err := sqlx.Open("postgres", dbinfo)
+	sqlx, err := sqlx.Open("postgres", dbinfo)
 	if err != nil {
 		return nil, fmt.Errorf("error while connecting the database: %s", err)
 	}
-	defer db.Close()
+	defer sqlx.Close()
 
 	// Test the connection
-	err = db.Ping()
+	err = sqlx.Ping()
 	if err != nil {
 		return nil, fmt.Errorf("error while pinging database: %s", err)
 	}
 
-	return db, nil
+	return sqlx, nil
 }

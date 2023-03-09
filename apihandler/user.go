@@ -9,24 +9,24 @@ import (
 	"github.com/huichiaotsou/go-roster/types"
 )
 
-func (h *APIHandler) SetUserRoutes() {
+func (a *APIHandler) SetUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
 	userApi := apiVersion + "/user"
 
-	// create user
-	h.Router.HandleFunc(userApi, h.CreateUser).Methods("POST")
+	// Handle create user
+	a.router.HandleFunc(userApi, a.CreateUser).Methods("POST")
 
-	// apply CheckUserPerm middleware to the sub router userPermRouter
+	// Apply CheckUserPerm middleware to the sub router userPermRouter
 	apiWithID := fmt.Sprintf(userApi + "/{id}")
-	userPermRouter := h.Router.PathPrefix(apiWithID).Subrouter()
-	userPermRouter.Use(h.Middleware.CheckUserPerm)
+	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
+	userPermRouter.Use(a.mw.CheckUserPerm)
 
-	// modify & delete user with user ID
-	userPermRouter.HandleFunc(apiWithID, h.UpdateUser).Methods("PUT")
-	userPermRouter.HandleFunc(apiWithID, h.DeleteUser).Methods("DELETE")
+	// Handle modify & delete user with user ID
+	userPermRouter.HandleFunc(apiWithID, a.UpdateUser).Methods("PUT")
+	userPermRouter.HandleFunc(apiWithID, a.DeleteUser).Methods("DELETE")
 }
 
-func (h *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (a *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	// Parse request body to User struct
 	var newUser types.User
 	err := json.NewDecoder(r.Body).Decode(&newUser)
@@ -36,7 +36,7 @@ func (h *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if the email exists
-	exist, err := h.DB.VerifyEmailExists(newUser.Email)
+	exist, err := a.db.VerifyEmailExists(newUser.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,7 +47,7 @@ func (h *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert new user into database
-	userId, err := h.DB.InsertOrUpdateUser(newUser)
+	userId, err := a.db.InsertOrUpdateUser(newUser)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,12 +69,12 @@ func (h *APIHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-func (h *APIHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (a *APIHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	// TO-DO
 
 }
 
-func (h *APIHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (a *APIHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	// TO-DO
 
 }
