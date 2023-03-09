@@ -20,32 +20,25 @@ import (
 type Server struct {
 	router *mux.Router
 	srv    *http.Server
-	logger *log.Logger
 }
 
 func NewServer() *Server {
-	logger := log.New()
-	// logger.SetFormatter(&log.JSONFormatter{})
-
-	s := &Server{
-		router: mux.NewRouter(),
-		logger: logger,
-	}
+	router := mux.NewRouter()
 
 	// Init Sqlx
 	sqlx, err := model.InitSqlx(config.GetDBConfig())
 	if err != nil {
-		logger.Fatalf("Failed to initialize database: %v", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
 	// Init Database instance
 	db := model.NewDatabase(sqlx)
 
 	// Init middleware
-	middleware := middleware.New(db, logger)
+	middleware := middleware.New(db)
 
 	// Init api handler
-	apiHandler := apihandler.New(s.router, logger, middleware, db)
+	apiHandler := apihandler.New(router, middleware, db)
 
 	// Register all routes
 	apiHandler.RegisterAllRoutes()
@@ -54,23 +47,27 @@ func NewServer() *Server {
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
-	}).Handler(s.router)
+	}).Handler(router)
 
-	s.srv = &http.Server{
+	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", config.GetServerPort()),
 		Handler:      corsHandler,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	return s
+
+	return &Server{
+		router: router,
+		srv:    srv,
+	}
 }
 
 func (s *Server) Start() {
 	go func() {
-		s.logger.Infof("Starting server on port %s", config.GetServerPort())
+		log.Infof("Starting server on port %s", config.GetServerPort())
 		if err := s.srv.ListenAndServe(); err != nil {
-			s.logger.Fatal(err)
+			log.Fatal(err)
 		}
 	}()
 
@@ -83,9 +80,9 @@ func (s *Server) Start() {
 	defer cancel()
 
 	if err := s.srv.Shutdown(ctx); err != nil {
-		s.logger.Errorf("Error shutting down server: %v", err)
+		log.Errorf("Error shutting down server: %v", err)
 		os.Exit(1)
 	}
 
-	s.logger.Info("Server gracefully stopped.")
+	log.Info("Server gracefully stopped.")
 }

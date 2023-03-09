@@ -2,17 +2,14 @@ package middleware
 
 import (
 	"github.com/huichiaotsou/go-roster/model"
-	log "github.com/sirupsen/logrus"
 )
 
 type Middleware struct {
-	Db     *model.Database
-	Logger *log.Logger
+	Db *model.Database
 }
 
-func New(db *model.Database, logger *log.Logger) *Middleware {
+func New(db *model.Database) *Middleware {
 	return &Middleware{
-		Db:     db,
-		Logger: logger,
+		Db: db,
 	}
 }

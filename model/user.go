@@ -3,12 +3,13 @@ package model
 import (
 	"database/sql"
 
+	dbtypes "github.com/huichiaotsou/go-roster/model/types"
 	"github.com/huichiaotsou/go-roster/types"
 )
 
-func (d *Database) VerifyEmailExists(email string) (bool, error) {
+func (db *Database) VerifyEmailExists(email string) (bool, error) {
 	var count int
-	err := d.Sql.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
+	err := db.Sqlx.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
 	if err != nil {
 		return false, err
 	}
@@ -22,11 +23,11 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	// Define the SQL statement to insert a user and handle conflicts on email
 	query := `
         INSERT INTO users (
-			first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_hash_or_token, date_of_birth, create_date
-		)
+            first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_hash_or_token, date_of_birth, create_date
+        )
         VALUES (
-			:first_name_en, :last_name_en, :first_name_zh, :last_name_zh, :email, :pwd_hash_or_token, :date_of_birth, NOW()
-		)
+            $1, $2, $3, $4, $5, $6, $7, NOW()
+        )
         ON CONFLICT (email) DO UPDATE SET
             first_name_en = EXCLUDED.first_name_en,
             last_name_en = EXCLUDED.last_name_en,
@@ -37,16 +38,9 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
         RETURNING id;
     `
 
-	// Prepare the statement
-	stmt, err := db.Sql.PrepareNamed(query)
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
 	// Execute the statement and get the generated user ID
 	var userID int64
-	err = stmt.Get(&userID, user)
+	err := db.Sqlx.Get(&userID, query, user.FirstNameEn, user.LastNameEn, user.FirstNameZh, user.LastNameZh, user.Email, user.PwdHashOrToken, user.DateOfBirth)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil
@@ -57,16 +51,10 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	return userID, nil
 }
 
-type Permission struct {
-	UserID         string `db:"user_id"`
-	TeamID         string `db:"team_id"`
-	PermissionName string `db:"permission_name"`
-}
-
-func (db *Database) GetPermissionsByUserID(userID string) ([]Permission, error) {
-	var permissions []Permission
-	query := `SELECT team_id, permission_name FROM permissions WHERE user_id=$1`
-	err := db.Sql.Select(&permissions, query, userID)
+func (db *Database) GetPermissionsByUserID(userID string) ([]dbtypes.DbPermission, error) {
+	var permissions []dbtypes.DbPermission
+	query := `SELECT * FROM permissions WHERE user_id=$1`
+	err := db.Sqlx.Select(&permissions, query, userID)
 	if err != nil {
 		return nil, err
 	}

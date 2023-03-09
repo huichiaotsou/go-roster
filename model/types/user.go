@@ -14,3 +14,9 @@ type DbUser struct {
 	DateOfBirth    string    `db:"date_of_birth"`
 	CreatedDate    time.Time `db:"created_date"`
 }
+
+type DbPermission struct {
+	UserID         string `db:"user_id"`
+	TeamID         string `db:"team_id"`
+	PermissionName string `db:"permission_name"`
+}
