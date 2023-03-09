@@ -18,11 +18,14 @@ type Config struct {
 }
 
 type Database struct {
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	Name     string `mapstructure:"name"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
+	Host         string `mapstructure:"host"`
+	Port         string `mapstructure:"port"`
+	Name         string `mapstructure:"name"`
+	Username     string `mapstructure:"username"`
+	Password     string `mapstructure:"password"`
+	Schema       string `mapstructure:"schema"`
+	MaxopenConns string `mapstructure:"max_open_connections"`
+	MaxIdleConns string `mapstructure:"max_idle_connections"`
 }
 
 // LoadConfig loads the configuration values from the config file

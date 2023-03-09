@@ -20,14 +20,16 @@ import (
 type Server struct {
 	router *mux.Router
 	srv    *http.Server
+	logger *log.Logger
 }
 
 func NewServer() *Server {
 	logger := log.New()
-	logger.SetFormatter(&log.JSONFormatter{})
+	// logger.SetFormatter(&log.JSONFormatter{})
 
 	s := &Server{
 		router: mux.NewRouter(),
+		logger: logger,
 	}
 
 	// Init Sqlx
@@ -66,9 +68,9 @@ func NewServer() *Server {
 
 func (s *Server) Start() {
 	go func() {
-		log.Infof("Starting server on port %s", config.GetServerPort())
+		s.logger.Infof("Starting server on port %s", config.GetServerPort())
 		if err := s.srv.ListenAndServe(); err != nil {
-			log.Fatal(err)
+			s.logger.Fatal(err)
 		}
 	}()
 
@@ -81,11 +83,11 @@ func (s *Server) Start() {
 	defer cancel()
 
 	if err := s.srv.Shutdown(ctx); err != nil {
-		log.Errorf("Error shutting down server: %v", err)
+		s.logger.Errorf("Error shutting down server: %v", err)
 		os.Exit(1)
 	}
 
-	log.Info("Server gracefully stopped.")
+	s.logger.Info("Server gracefully stopped.")
 }
 
 func (s *Server) UseMiddleware(middleware func(http.Handler) http.Handler) {
