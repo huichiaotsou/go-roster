@@ -19,15 +19,16 @@ func (a *APIHandler) SetUserRoutes() {
 
 	// Apply permission middlewares to sub router
 	apiWithID := fmt.Sprintf(userApi + "/{id}")
-	permRouter := a.router.PathPrefix(apiWithID).Subrouter()
 
 	// Update user requires user permission
-	permRouter.Use(a.mw.CheckUserPerm)
-	permRouter.HandleFunc("", a.handleUpdateUser).Methods(http.MethodPut)
+	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
+	userPermRouter.Use(a.mw.CheckUserPerm)
+	userPermRouter.HandleFunc("", a.handleUpdateUser).Methods(http.MethodPut)
 
 	// Delete user requires admin permission
-	permRouter.Use(a.mw.CheckAdminPerm)
-	permRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
+	adminPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
+	adminPermRouter.Use(a.mw.CheckAdminPerm)
+	adminPermRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
 }
 
 func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
@@ -65,16 +66,22 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return success response with user ID
-	response := struct {
-		UserID int64 `json:"userId"`
-	}{
-		UserID: userId,
+	token, err := generateJWTToken(userId, newUser.Email)
+	if err != nil {
+		err = fmt.Errorf("error while generating JWT token: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	// Set token in Authorization header
+	w.Header().Set("Authorization", "Bearer "+token)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	// Write response
+	// Return success response
+	response := map[string]string{
+		"message": "User created successfully",
+	}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		err = fmt.Errorf("error while writing response in handleCreateUser: %s", err)
@@ -105,23 +112,28 @@ func (a *APIHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return success response with user ID
-	response := struct {
-		UserID int64 `json:"userId"`
-	}{
-		UserID: userId,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-
-	// Write response
-	err = json.NewEncoder(w).Encode(response)
+	token, err := generateJWTToken(userId, user.Email)
 	if err != nil {
-		err = fmt.Errorf("error while writing response in handleUpdateUser: %s", err)
+		err = fmt.Errorf("error while generating JWT token: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Set token in Authorization header
+	w.Header().Set("Authorization", "Bearer "+token)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	// Return success response
+	response := map[string]string{
+		"message": "User updated successfully",
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		err = fmt.Errorf("error while writing response in handleCreateUser: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (a *APIHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {

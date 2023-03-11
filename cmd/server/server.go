@@ -79,9 +79,10 @@ func (s *Server) Start() {
 
 	<-c
 
+	s.db.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	defer s.db.Close()
 
 	if err := s.srv.Shutdown(ctx); err != nil {
 		log.Errorf("Error shutting down server: %v", err)

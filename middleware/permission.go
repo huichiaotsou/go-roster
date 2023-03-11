@@ -7,7 +7,6 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/huichiaotsou/go-roster/config"
-	"github.com/huichiaotsou/go-roster/types"
 )
 
 // User Permission
@@ -45,19 +44,21 @@ func (m *Middleware) adminHasPermission(r *http.Request) bool {
 	}
 
 	// TO-DO: use userID to check admin role
-	userID := claims["user_id"].(string)
+	userID := claims["userID"].(string)
 	permissions, err := m.Db.GetPermissionsByUserID(userID)
 	if err != nil {
 		return false
 	}
 
-	// verify team and role
-	teamID := claims["team_id"].(string)
-	for _, p := range permissions {
-		if p.TeamID == teamID && p.PermissionName == types.USER_ROLE_ADMIN {
-			return true
-		}
-	}
+	fmt.Println(permissions)
+
+	// // verify team and role
+	// teamID := claims["team_id"].(string)
+	// for _, p := range permissions {
+	// 	if p.TeamID == teamID && p.PermissionName == types.USER_ROLE_ADMIN {
+	// 		return true
+	// 	}
+	// }
 
 	return false
 }
