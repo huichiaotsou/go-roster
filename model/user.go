@@ -53,6 +53,19 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	return userID, nil
 }
 
+func (db *Database) GetTeamIDByUserID(userID int64) (int64, error) {
+	stmt := "SELECT team_id FROM user_teams WHERE user_id=$1"
+	var teamID int64
+	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return teamID, nil
+}
+
 func (db *Database) GetPermissionsByUserID(userID string) ([]dbtypes.DbPermission, error) {
 	var permissions []dbtypes.DbPermission
 	query := `SELECT * FROM permissions WHERE user_id=$1`

@@ -66,7 +66,15 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWTToken(userId, newUser.Email)
+	// Get teamID with userID
+	teamID, err := a.db.GetTeamIDByUserID(userId)
+	if err != nil {
+		err = fmt.Errorf("error while getting user team ID: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	token, err := generateJWTToken(userId, teamID, newUser.Email)
 	if err != nil {
 		err = fmt.Errorf("error while generating JWT token: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -112,7 +120,15 @@ func (a *APIHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWTToken(userId, user.Email)
+	// Get teamID with userID
+	teamID, err := a.db.GetTeamIDByUserID(userId)
+	if err != nil {
+		err = fmt.Errorf("error while getting user team ID: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	token, err := generateJWTToken(userId, teamID, user.Email)
 	if err != nil {
 		err = fmt.Errorf("error while generating JWT token: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
