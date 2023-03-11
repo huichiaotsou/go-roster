@@ -13,3 +13,7 @@ func NewDatabase(db *sqlx.DB) *Database {
 		Sqlx: db,
 	}
 }
+
+func (db *Database) Close() {
+	db.Sqlx.Close()
+}

@@ -2,16 +2,18 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 
 	dbtypes "github.com/huichiaotsou/go-roster/model/types"
 	"github.com/huichiaotsou/go-roster/types"
 )
 
 func (db *Database) VerifyEmailExists(email string) (bool, error) {
+
 	var count int
 	err := db.Sqlx.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("error while verifying email exists: %s", err)
 	}
 	return count > 0, nil
 }
@@ -23,7 +25,7 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	// Define the SQL statement to insert a user and handle conflicts on email
 	query := `
         INSERT INTO users (
-            first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_or_token, date_of_birth, create_date
+            first_name_en, last_name_en, first_name_zh, last_name_zh, email, pwd_hash_or_token, date_of_birth, created_date
         )
         VALUES (
             $1, $2, $3, $4, $5, $6, $7, NOW()
@@ -33,7 +35,7 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
             last_name_en = EXCLUDED.last_name_en,
             first_name_zh = EXCLUDED.first_name_zh,
             last_name_zh = EXCLUDED.last_name_zh,
-            password = EXCLUDED.password,
+            pwd_hash_or_token = EXCLUDED.pwd_hash_or_token,
             date_of_birth = EXCLUDED.date_of_birth
         RETURNING id;
     `
@@ -45,7 +47,7 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 		if err == sql.ErrNoRows {
 			return 0, nil
 		}
-		return 0, err
+		return 0, fmt.Errorf("error while inserting/updating user: %s", err)
 	}
 
 	return userID, nil
@@ -56,7 +58,7 @@ func (db *Database) GetPermissionsByUserID(userID string) ([]dbtypes.DbPermissio
 	query := `SELECT * FROM permissions WHERE user_id=$1`
 	err := db.Sqlx.Select(&permissions, query, userID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error while getting permissions by user ID: %s", err)
 	}
 	return permissions, nil
 }

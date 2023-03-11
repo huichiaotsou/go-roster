@@ -23,7 +23,6 @@ func InitSqlx(dbConfig *config.Database) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error while connecting the database: %s", err)
 	}
-	defer sqlx.Close()
 
 	sqlx.SetMaxOpenConns(dbConfig.MaxopenConns)
 	sqlx.SetMaxIdleConns(dbConfig.MaxIdleConns)
