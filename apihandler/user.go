@@ -9,6 +9,7 @@ import (
 	"github.com/huichiaotsou/go-roster/types"
 )
 
+// /api/v1/user or  /api/v1/user/{id}
 func (a *APIHandler) SetUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
 	userApi := apiVersion + "/user"
