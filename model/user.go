@@ -53,15 +53,15 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	return userID, nil
 }
 
-func (db *Database) GetTeamIDByUserID(userID int64) (int64, error) {
+func (db *Database) GetTeamIDsByUserID(userID int64) ([]int64, error) {
 	stmt := "SELECT team_id FROM user_teams WHERE user_id=$1"
-	var teamID int64
+	var teamID []int64
 	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, nil
+			return []int64{}, nil
 		}
-		return 0, err
+		return nil, err
 	}
 	return teamID, nil
 }
