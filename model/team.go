@@ -18,7 +18,10 @@ func (db *Database) InsertTeams(t types.Teams) error {
 		values = append(values, team)
 	}
 
-	stmt := fmt.Sprintf("INSERT INTO teams (team_name) VALUES %s", strings.Join(placeholders, ", "))
+	stmt := fmt.Sprintf(
+		"INSERT INTO teams (team_name) VALUES %s ON CONFLICT DO NOTHING",
+		strings.Join(placeholders, ", "),
+	)
 	_, err := db.Sqlx.Exec(stmt, values...)
 	if err != nil {
 		return fmt.Errorf("error while inserting teams: %s", err)

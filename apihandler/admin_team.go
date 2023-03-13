@@ -5,29 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/types"
 )
-
-var (
-	ADMIN_API = "/admin"
-	TEAM_API  = "/team"
-)
-
-// /api/v1/admin/team
-func (a *APIHandler) SetAdminTeamRoutes() {
-	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	adminTeamApi := apiVersion + ADMIN_API + TEAM_API
-
-	adminPermRouter := a.router.PathPrefix(adminTeamApi).Subrouter()
-	adminPermRouter.Use(a.mw.CheckSuperPerm)
-
-	// Handle create teams
-	adminPermRouter.HandleFunc("/create", a.handleCreateTeams).Methods(http.MethodPost)
-
-	// // Handle assign user teams
-	adminPermRouter.HandleFunc("/assign_user", a.handleAssignTeams).Methods(http.MethodPost)
-}
 
 func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 	// Parse request body to Team slice
@@ -63,7 +42,7 @@ func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *APIHandler) handleAssignTeams(w http.ResponseWriter, r *http.Request) {
+func (a *APIHandler) handleAssignUserTeams(w http.ResponseWriter, r *http.Request) {
 	// Parse request body to Team slice
 	var userTeams types.UserTeams
 	err := json.NewDecoder(r.Body).Decode(&userTeams)
