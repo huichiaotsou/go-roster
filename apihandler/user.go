@@ -32,7 +32,7 @@ func (a *APIHandler) SetUserRoutes() {
 
 	// Delete user requires admin permission
 	adminPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
-	adminPermRouter.Use(a.mw.CheckAdminPerm)
+	adminPermRouter.Use(a.mw.CheckUserPerm)
 	adminPermRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
 }
 

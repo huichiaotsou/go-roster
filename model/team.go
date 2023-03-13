@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/huichiaotsou/go-roster/types"
+	"github.com/lib/pq"
 )
 
 func (db *Database) InsertTeams(t types.Teams) error {
@@ -21,6 +22,22 @@ func (db *Database) InsertTeams(t types.Teams) error {
 	_, err := db.Sqlx.Exec(stmt, values...)
 	if err != nil {
 		return fmt.Errorf("error while inserting teams: %s", err)
+	}
+
+	return nil
+}
+
+func (db *Database) InsertUserTeams(userTeams types.UserTeams) error {
+	// Prepare the SQL statement with placeholders for the user ID and team IDs.
+	// We use the unnest() function to convert the team ID array into rows.
+	stmt := "INSERT INTO user_teams (user_id, team_id) " +
+		"SELECT $1, unnest($2::int[]) " +
+		"ON CONFLICT (user_id, team_id) DO NOTHING"
+
+	// Execute the SQL statement with the user ID and team IDs.
+	_, err := db.Sqlx.Exec(stmt, userTeams.UserID, pq.Array(userTeams.TeamIDs))
+	if err != nil {
+		return err
 	}
 
 	return nil

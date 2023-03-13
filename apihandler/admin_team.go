@@ -26,7 +26,7 @@ func (a *APIHandler) SetAdminTeamRoutes() {
 	adminPermRouter.HandleFunc("/create", a.handleCreateTeams).Methods(http.MethodPost)
 
 	// // Handle assign user teams
-	adminPermRouter.HandleFunc("/assign_user", a.handleAssignTeams).Methods(http.MethodDelete)
+	adminPermRouter.HandleFunc("/assign_user", a.handleAssignTeams).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +54,39 @@ func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 	// Return success response
 	response := map[string]string{
 		"message": "Teams created successfully",
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		err = fmt.Errorf("error while writing response in handleCreateTeams: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (a *APIHandler) handleAssignTeams(w http.ResponseWriter, r *http.Request) {
+	// Parse request body to Team slice
+	var userTeams types.UserTeams
+	err := json.NewDecoder(r.Body).Decode(&userTeams)
+	if err != nil {
+		err = fmt.Errorf("error while decoding user teams in handleAssignTeams: %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = a.db.InsertUserTeams(userTeams)
+	if err != nil {
+		err = fmt.Errorf("error while assigning user teams in handleAssignTeams: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Set token in Authorization header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Return success response
+	response := map[string]string{
+		"message": "Teams assigned to users successfully",
 	}
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {

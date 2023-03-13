@@ -77,5 +77,4 @@ func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
 	fmt.Println("permissions: ", permissions)
 
 	return false
-
 }
