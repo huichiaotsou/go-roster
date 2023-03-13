@@ -27,6 +27,7 @@ func New(
 
 func (a *APIHandler) RegisterAllRoutes() {
 	a.SetUserRoutes()
+	a.SetAdminTeamRoutes()
 	// Set___Routers(router)
 	// Set___Routers(router)
 	// Set___Routers(router)

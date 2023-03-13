@@ -9,7 +9,8 @@ CREATE TABLE users (
     email_verified      BOOLEAN      NOT NULL DEFAULT false,
     pwd_hash_or_token   TEXT         NOT NULL, -- password hash or OAuth login token
     date_of_birth       DATE         NULL,
-    created_date        DATE         NOT NULL DEFAULT CURRENT_DATE
+    created_date        DATE         NOT NULL DEFAULT CURRENT_DATE,
+    is_super_user       BOOLEAN      NOT NULL DEFAULT false
 );
 
 -- Define the teams table to store the teams of the users: worship, sound...

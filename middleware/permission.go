@@ -3,17 +3,16 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
-	"github.com/golang-jwt/jwt"
-	"github.com/huichiaotsou/go-roster/config"
+	"github.com/huichiaotsou/go-roster/types"
+	"github.com/huichiaotsou/go-roster/utils"
 )
 
 // User Permission
 func (m *Middleware) CheckUserPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
-		_, verified := verifyToken(r)
+		_, verified := utils.VerifyJWTToken(r)
 		if !verified {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
@@ -24,70 +23,59 @@ func (m *Middleware) CheckUserPerm(next http.Handler) http.Handler {
 	})
 }
 
-// Admin Permission
-func (m *Middleware) CheckAdminPerm(next http.Handler) http.Handler {
+// Super User Permission
+func (m *Middleware) CheckSuperPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
-		if !m.adminHasPermission(r) {
-			http.Error(w, "Forbidden", http.StatusForbidden)
+		if m.hasSuperUserPermission(r) {
+			next.ServeHTTP(w, r)
 			return
 		}
-		// If user has admin permission, call the next handler
-		next.ServeHTTP(w, r)
+
+		http.Error(w, "Forbidden", http.StatusForbidden)
 	})
 }
 
-func (m *Middleware) adminHasPermission(r *http.Request) bool {
-	claims, verified := verifyToken(r)
+func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
+	claims, verified := utils.VerifyJWTToken(r)
 	if !verified {
 		return false
 	}
 
-	// TO-DO: use userID to check admin role
-	userID := claims["userID"].(string)
-	permissions, err := m.Db.GetPermissionsByUserID(userID)
+	userID := int64(claims[types.UserIDclaim].(float64))
+	isSuperUser, err := m.Db.IsSuperUser(userID)
+	if err != nil || !isSuperUser {
+		fmt.Println(err.Error())
+		return false
+	}
+
+	return true
+}
+
+func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
+	// TO-DO: how to distinguish team??
+	claims, verified := utils.VerifyJWTToken(r)
+	if !verified {
+		return false
+	}
+	if claims[types.TeamIDsclaim] == nil {
+		return false
+	}
+
+	userID := claims[types.UserIDclaim].(float64)
+	teamIDClaims := claims[types.TeamIDsclaim].([]interface{})
+	var teamIDs = make([]int64, len(teamIDClaims))
+	for index, t := range teamIDClaims {
+		teamIDs[index] = int64(t.(float64))
+	}
+
+	permissions, err := m.Db.GetPermissionsByUserTeam(int64(userID), teamIDs)
 	if err != nil {
 		return false
 	}
 
-	fmt.Println(permissions)
-
-	// // verify team and role
-	// teamID := claims["team_id"].(string)
-	// for _, p := range permissions {
-	// 	if p.TeamID == teamID && p.PermissionName == types.USER_ROLE_ADMIN {
-	// 		return true
-	// 	}
-	// }
+	fmt.Println("permissions: ", permissions)
 
 	return false
-}
 
-func verifyToken(r *http.Request) (claims jwt.MapClaims, verified bool) {
-	// Retrieve the JWT token from the request headers
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		return claims, false
-	}
-	tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
-
-	// Parse and validate the JWT token
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Verify that the signing method is HMAC and use the secret key to validate the token
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(config.GetJwtKey()), nil
-	})
-	if err != nil || !token.Valid {
-		return claims, false
-	}
-
-	// Retrieve the user ID from the JWT token
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return claims, false
-	}
-
-	return claims, true
 }

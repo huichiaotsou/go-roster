@@ -66,12 +66,24 @@ func (db *Database) GetTeamIDsByUserID(userID int64) ([]int64, error) {
 	return teamID, nil
 }
 
-func (db *Database) GetPermissionsByUserID(userID string) ([]dbtypes.DbPermission, error) {
+func (db *Database) GetPermissionsByUserTeam(userID int64, teamIDs []int64) ([]dbtypes.DbPermission, error) {
 	var permissions []dbtypes.DbPermission
-	query := `SELECT * FROM permissions WHERE user_id=$1`
-	err := db.Sqlx.Select(&permissions, query, userID)
+	query := `SELECT * FROM permissions WHERE user_id= $1 ADN team_id = ANY($2)`
+	err := db.Sqlx.Select(&permissions, query, userID, teamIDs)
 	if err != nil {
-		return nil, fmt.Errorf("error while getting permissions by user ID: %s", err)
+		return permissions, fmt.Errorf("error while getting permissions by user ID and Team IDs: %s", err)
 	}
 	return permissions, nil
+}
+
+func (db *Database) IsSuperUser(userID int64) (bool, error) {
+	var isSuperUser bool
+	query := "SELECT is_super_user FROM users WHERE id= $1"
+	err := db.Sqlx.Get(&isSuperUser, query, userID)
+	if err != nil {
+		return false, fmt.Errorf("error while verifying super user by user ID: %s", err)
+	}
+
+	return isSuperUser, nil
+
 }

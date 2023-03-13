@@ -7,12 +7,17 @@ import (
 
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/types"
+	"github.com/huichiaotsou/go-roster/utils"
+)
+
+var (
+	USER_ROUT = "/user"
 )
 
 // /api/v1/user or  /api/v1/user/{id}
 func (a *APIHandler) SetUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	userApi := apiVersion + "/user"
+	userApi := apiVersion + USER_ROUT
 
 	// Handle create user
 	a.router.HandleFunc(userApi, a.handleCreateUser).Methods(http.MethodPost)
@@ -59,7 +64,7 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	newUser.PwdOrToken = hashedPwd
 
 	// Insert new user into database
-	userId, err := a.db.InsertOrUpdateUser(newUser)
+	userID, err := a.db.InsertOrUpdateUser(newUser)
 	if err != nil {
 		err = fmt.Errorf("error while creating user: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -67,14 +72,14 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get teamIDs with userID
-	teamIDs, err := a.db.GetTeamIDsByUserID(userId)
+	teamIDs, err := a.db.GetTeamIDsByUserID(userID)
 	if err != nil {
 		err = fmt.Errorf("error while getting user team ID: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	token, err := generateJWTToken(userId, teamIDs, newUser.Email)
+	token, err := utils.GenerateJWTToken(userID, teamIDs, newUser.Email)
 	if err != nil {
 		err = fmt.Errorf("error while generating JWT token: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -128,7 +133,7 @@ func (a *APIHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWTToken(userId, teamIDs, user.Email)
+	token, err := utils.GenerateJWTToken(userId, teamIDs, user.Email)
 	if err != nil {
 		err = fmt.Errorf("error while generating JWT token: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -138,7 +143,7 @@ func (a *APIHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	// Set token in Authorization header
 	w.Header().Set("Authorization", "Bearer "+token)
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 
 	// Return success response
 	response := map[string]string{
