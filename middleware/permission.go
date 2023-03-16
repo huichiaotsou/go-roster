@@ -53,26 +53,22 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 }
 
 func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
-	// TO-DO: how to distinguish team??
 	claims, verified := utils.VerifyJWTToken(r)
 	if !verified {
 		return false
 	}
-	if claims[types.TeamIDsclaim] == nil {
+	if claims[types.TeamPermsClaim] == nil {
 		return false
 	}
 
 	userID := claims[types.UserIDclaim].(float64)
-	teamIDClaims := claims[types.TeamIDsclaim].([]interface{})
-	var teamIDs = make([]int64, len(teamIDClaims))
-	for index, t := range teamIDClaims {
+	teamPermsClaims := claims[types.TeamPermsClaim].([]interface{})
+	var teamIDs = make([]int64, len(teamPermsClaims))
+	for index, t := range teamPermsClaims {
 		teamIDs[index] = int64(t.(float64))
 	}
 
-	permissions, err := m.Db.GetPermissionsByUserTeam(int64(userID), teamIDs)
-	if err != nil {
-		return false
-	}
+	r.Body.Read()
 
 	fmt.Println("permissions: ", permissions)
 

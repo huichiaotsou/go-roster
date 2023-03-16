@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	dbtypes "github.com/huichiaotsou/go-roster/model/types"
 	"github.com/huichiaotsou/go-roster/types"
 )
 
@@ -53,27 +52,17 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	return userID, nil
 }
 
-func (db *Database) GetTeamIDsByUserID(userID int64) ([]int64, error) {
-	stmt := "SELECT team_id FROM user_teams WHERE user_id=$1"
-	var teamID []int64
-	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamID)
+func (db *Database) GetTeamPermsByUserID(userID int64) ([]types.TeamPermission, error) {
+	stmt := "SELECT team_id, permission_name FROM permissions WHERE user_id=$1"
+	var teamPerms []types.TeamPermission
+	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamPerms)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return []int64{}, nil
+			return nil, nil
 		}
 		return nil, err
 	}
-	return teamID, nil
-}
-
-func (db *Database) GetPermissionsByUserTeam(userID int64, teamIDs []int64) ([]dbtypes.DbPermission, error) {
-	var permissions []dbtypes.DbPermission
-	query := `SELECT * FROM permissions WHERE user_id= $1 ADN team_id = ANY($2)`
-	err := db.Sqlx.Select(&permissions, query, userID, teamIDs)
-	if err != nil {
-		return permissions, fmt.Errorf("error while getting permissions by user ID and Team IDs: %s", err)
-	}
-	return permissions, nil
+	return teamPerms, nil
 }
 
 func (db *Database) IsSuperUser(userID int64) (bool, error) {

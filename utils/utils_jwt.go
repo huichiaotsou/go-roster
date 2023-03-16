@@ -11,11 +11,11 @@ import (
 	"github.com/huichiaotsou/go-roster/types"
 )
 
-func GenerateJWTToken(userID int64, teamIDs []int64, email string) (string, error) {
+func GenerateJWTToken(userID int64, teamPerms []types.TeamPermission, email string) (string, error) {
 	// Set token claims
 	claims := jwt.MapClaims{}
 	claims[types.UserIDclaim] = userID
-	claims[types.TeamIDsclaim] = teamIDs
+	claims[types.TeamPermsClaim] = teamPerms
 	claims[types.Emailclaim] = email
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // Token expires after 24 hours
 
