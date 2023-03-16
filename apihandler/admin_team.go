@@ -9,7 +9,7 @@ import (
 )
 
 func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
-	// Parse request body to Team slice
+	// Parse request body to Teams slice
 	var teams types.Teams
 	err := json.NewDecoder(r.Body).Decode(&teams)
 	if err != nil {

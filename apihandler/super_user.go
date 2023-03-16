@@ -8,14 +8,11 @@ import (
 )
 
 var (
-	ADMIN_API           = "/admin"
-	WORSHIP_TEAM_API    = "/worship"
-	SOUND_TEAM_API      = "/sound"
-	PRODUCTION_TEAM_API = "/production"
+	ADMIN_API = "/super"
 )
 
-// /api/v1/admin, /api/v1/worship, /api/v1/sound...
-func (a *APIHandler) SetAdminRoutes() {
+// /api/v1/super
+func (a *APIHandler) SetSuperUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
 	adminApi := apiVersion + ADMIN_API
 
