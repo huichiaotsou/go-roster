@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/huichiaotsou/go-roster/types"
@@ -45,7 +44,6 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 	userID := int64(claims[types.UserIDclaim].(float64))
 	isSuperUser, err := m.Db.IsSuperUser(userID)
 	if err != nil || !isSuperUser {
-		fmt.Println(err.Error())
 		return false
 	}
 
@@ -53,24 +51,24 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 }
 
 func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
-	claims, verified := utils.VerifyJWTToken(r)
-	if !verified {
-		return false
-	}
-	if claims[types.TeamPermsClaim] == nil {
-		return false
-	}
+	// claims, verified := utils.VerifyJWTToken(r)
+	// if !verified {
+	// 	return false
+	// }
+	// if claims[types.TeamPermsClaim] == nil {
+	// 	return false
+	// }
 
-	userID := claims[types.UserIDclaim].(float64)
-	teamPermsClaims := claims[types.TeamPermsClaim].([]interface{})
-	var teamIDs = make([]int64, len(teamPermsClaims))
-	for index, t := range teamPermsClaims {
-		teamIDs[index] = int64(t.(float64))
-	}
+	// userID := claims[types.UserIDclaim].(float64)
+	// teamPermsClaims := claims[types.TeamPermsClaim].([]types.TeamPermission)
 
-	r.Body.Read()
-
-	fmt.Println("permissions: ", permissions)
+	// // Parse request body to Teams slice
+	// var teamPerms []types.TeamPermission
+	// err := json.NewDecoder(r.Body).Decode(&teamPerms)
+	// if err != nil {
+	// 	err = fmt.Errorf("error while decoding teams in handleCreateTeams: %s", err)
+	// 	return false
+	// }
 
 	return false
 }

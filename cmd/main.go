@@ -13,6 +13,9 @@ func main() {
 		return
 	}
 
-	// Start the server
-	server.NewServer().Start()
+	// Build server
+	server := server.NewServer()
+
+	// Start server
+	server.Start()
 }

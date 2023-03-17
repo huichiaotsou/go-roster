@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/types"
 )
 
-func GenerateJWTToken(userID int64, teamPerms []types.TeamPermission, email string) (string, error) {
+func GenerateJWTToken(userID int64, teamPerms []*types.TeamPermission, email string) (string, error) {
 	// Set token claims
 	claims := jwt.MapClaims{}
 	claims[types.UserIDclaim] = userID
 	claims[types.TeamPermsClaim] = teamPerms
 	claims[types.Emailclaim] = email
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // Token expires after 24 hours
+
+	// To-Do: to resume the expiration
+	// claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // Token expires after 24 hours
 
 	// Generate token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -50,7 +50,7 @@ func NewServer() *Server {
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 	}).Handler(router)
 
-	// Config server
+	// Server config
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", config.GetServerPort()),
 		Handler:      corsHandler,

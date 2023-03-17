@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 
+	dbtypes "github.com/huichiaotsou/go-roster/model/types"
 	"github.com/huichiaotsou/go-roster/types"
 )
 
 func (db *Database) VerifyEmailExists(email string) (bool, error) {
-
 	var count int
 	err := db.Sqlx.Get(&count, "SELECT COUNT(*) FROM users WHERE email = $1", email)
 	if err != nil {
@@ -52,9 +52,9 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 	return userID, nil
 }
 
-func (db *Database) GetTeamPermsByUserID(userID int64) ([]types.TeamPermission, error) {
+func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission, error) {
 	stmt := "SELECT team_id, permission_name FROM permissions WHERE user_id=$1"
-	var teamPerms []types.TeamPermission
+	var teamPerms []dbtypes.DbTeamPermission
 	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamPerms)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -62,7 +62,12 @@ func (db *Database) GetTeamPermsByUserID(userID int64) ([]types.TeamPermission, 
 		}
 		return nil, err
 	}
-	return teamPerms, nil
+
+	var teamPermsType []*types.TeamPermission
+	for _, t := range teamPerms {
+		teamPermsType = append(teamPermsType, types.NewTeamPermission(t.TeamID, t.PermissionName))
+	}
+	return teamPermsType, nil
 }
 
 func (db *Database) IsSuperUser(userID int64) (bool, error) {
