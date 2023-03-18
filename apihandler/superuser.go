@@ -20,7 +20,7 @@ func (a *APIHandler) SetSuperUserRoutes() {
 
 	// Requires super user permission to creat teams and assign user teams
 	superPermRouter := a.router.PathPrefix(adminApi).Subrouter()
-	superPermRouter.Use(a.mw.CheckSuperPerm)
+	// superPermRouter.Use(a.mw.CheckSuperPerm)
 	superPermRouter.HandleFunc("/create_teams", a.handleCreateTeams).Methods(http.MethodPost)
 
 	// Should merge the below 2 (assign_teams_permissions)
