@@ -17,13 +17,13 @@ var (
 // /api/v1/user or  /api/v1/user/{id}
 func (a *APIHandler) SetUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	userApi := apiVersion + USER_ROUT
+	userAPI := apiVersion + USER_ROUT
 
 	// Handle create user
-	a.router.HandleFunc(userApi, a.handleCreateUser).Methods(http.MethodPost)
+	a.router.HandleFunc(userAPI, a.handleCreateUser).Methods(http.MethodPost)
 
 	// Apply permission middlewares to sub router
-	apiWithID := fmt.Sprintf(userApi + "/{id}")
+	apiWithID := fmt.Sprintf(userAPI + "/{id}")
 
 	// Update user requires user permission
 	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()

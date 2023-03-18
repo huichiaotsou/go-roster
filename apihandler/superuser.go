@@ -17,16 +17,17 @@ var (
 // /api/v1/super
 func (a *APIHandler) SetSuperUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	superuserApi := apiVersion + SUPERUSER_API // /api/v1/superuser
+	superuserAPI := apiVersion + SUPERUSER_API // /api/v1/superuser
 
 	// Requires super user permission
-	superPermRouter := a.router.PathPrefix(superuserApi).Subrouter()
+	superPermRouter := a.router.PathPrefix(superuserAPI).Subrouter()
 	// superPermRouter.Use(a.mw.CheckSuperPerm)
 
 	superPermRouter.HandleFunc("/{user_id}", a.handleEnableSuperuser).Methods(http.MethodPut)
 	superPermRouter.HandleFunc("/{user_id}", a.handleDisableSuperuser).Methods(http.MethodDelete)
 
 	superPermRouter.HandleFunc("/create_teams", a.handleCreateTeams).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("/create_campus", a.handleCreateCampus).Methods(http.MethodPost)
 
 	// Should merge the below 2 (assign_teams_permissions)
 	// the table permission should contains only the permission ID
@@ -97,7 +98,7 @@ func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Insert new user into database
+	// Insert teams into database
 	err = a.db.InsertTeams(teams)
 	if err != nil {
 		err = fmt.Errorf("error while creating teams in handleCreateTeams: %s", err)
@@ -116,6 +117,42 @@ func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		err = fmt.Errorf("error while writing response in handleCreateTeams: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (a *APIHandler) handleCreateCampus(w http.ResponseWriter, r *http.Request) {
+	// Parse request body to Campus slice
+	var campuses types.Campuses
+	err := json.NewDecoder(r.Body).Decode(&campuses)
+	if err != nil {
+		err = fmt.Errorf("error while decoding teams in handleCreateCampus: %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("campuses: ", campuses)
+
+	// Insert campus into database
+	err = a.db.InsertCampus(campuses)
+	if err != nil {
+		err = fmt.Errorf("error while creating teams in handleCreateCampus: %s", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Set token in Authorization header
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	// Return success response
+	response := map[string]string{
+		"message": "Campus created successfully",
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		err = fmt.Errorf("error while writing response in handleCreateCampus: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
