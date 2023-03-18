@@ -50,6 +50,19 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 	return true
 }
 
+// Admin Permission
+func (m *Middleware) CheckAdminOrSuperPerm(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check user's permission based on the request context
+		if m.hasTeamAdminPermission(r) || m.hasSuperUserPermission(r) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, "Forbidden", http.StatusForbidden)
+	})
+}
+
 func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
 	// claims, verified := utils.VerifyJWTToken(r)
 	// if !verified {
