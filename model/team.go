@@ -44,6 +44,7 @@ func (db *Database) InsertCampus(c types.Campuses) error {
 		"INSERT INTO campus (campus_name) VALUES %s ON CONFLICT DO NOTHING",
 		strings.Join(placeholders, ", "),
 	)
+
 	_, err := db.Sqlx.Exec(stmt, values...)
 	if err != nil {
 		return fmt.Errorf("error while inserting campus: %s", err)

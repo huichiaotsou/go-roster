@@ -39,187 +39,103 @@ func (a *APIHandler) handleEnableSuperuser(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	userID := vars["user_id"]
 
-	err := a.db.UpdateIsSuperuser(userID, true)
-	if err != nil {
-		err = fmt.Errorf("error while enabling super user in handleEnableSuperuser: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := a.db.UpdateIsSuperuser(userID, true); err != nil {
+		handleError(w, err, "error while enabling super user in handleEnableSuperuser", http.StatusInternalServerError)
 		return
 	}
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Enable superuser with success",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleEnableSuperuser: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
 }
+
 func (a *APIHandler) handleDisableSuperuser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["user_id"]
 
-	err := a.db.UpdateIsSuperuser(userID, false)
-	if err != nil {
-		err = fmt.Errorf("error while enabling super user in handleEnableSuperuser: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := a.db.UpdateIsSuperuser(userID, false); err != nil {
+		handleError(w, err, "error while disabling super user in handleDisableSuperuser", http.StatusInternalServerError)
 		return
 	}
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Disable superuser with success",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleEnableSuperuser: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
 }
 
 func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
-	// Parse request body to Teams slice
 	var teams types.Teams
-	err := json.NewDecoder(r.Body).Decode(&teams)
-	if err != nil {
-		err = fmt.Errorf("error while decoding teams in handleCreateTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&teams); err != nil {
+		handleError(w, err, "error while decoding teams in handleCreateTeams", http.StatusBadRequest)
+		return
+	}
+	fmt.Println("before: ", a.db.Sqlx.Ping())
+
+	if err := a.db.InsertTeams(teams); err != nil {
+		handleError(w, err, "error while creating teams in handleCreateTeams", http.StatusInternalServerError)
 		return
 	}
 
-	// Insert teams into database
-	err = a.db.InsertTeams(teams)
-	if err != nil {
-		err = fmt.Errorf("error while creating teams in handleCreateTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	fmt.Println("after: ", a.db.Sqlx.Ping())
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Teams created successfully",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleCreateTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
 }
 
 func (a *APIHandler) handleCreateCampus(w http.ResponseWriter, r *http.Request) {
-	// Parse request body to Campus slice
 	var campuses types.Campuses
-	err := json.NewDecoder(r.Body).Decode(&campuses)
-	if err != nil {
-		err = fmt.Errorf("error while decoding teams in handleCreateCampus: %s", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&campuses); err != nil {
+		handleError(w, err, "error while decoding campuses in handleCreateCampus", http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("campuses: ", campuses)
+	fmt.Println("before: ", a.db.Sqlx.Ping())
 
-	// Insert campus into database
-	err = a.db.InsertCampus(campuses)
-	if err != nil {
-		err = fmt.Errorf("error while creating teams in handleCreateCampus: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := a.db.InsertCampus(campuses); err != nil {
+		handleError(w, err, "error while creating campuses in handleCreateCampus", http.StatusInternalServerError)
 		return
 	}
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	fmt.Println("after: ", a.db.Sqlx.Ping())
 
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Campus created successfully",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleCreateCampus: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
 }
 
 func (a *APIHandler) handleAssignUserTeams(w http.ResponseWriter, r *http.Request) {
 	// Parse request body to userTeams struct
 	var userTeams types.UserTeams
-	err := json.NewDecoder(r.Body).Decode(&userTeams)
-	if err != nil {
-		err = fmt.Errorf("error while decoding user teams in handleAssignTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&userTeams); err != nil {
+		handleError(w, err, "error while decoding user teams in handleAssignTeams", http.StatusBadRequest)
 		return
 	}
 
-	err = a.db.InsertUserTeams(userTeams)
-	if err != nil {
-		err = fmt.Errorf("error while assigning user teams in handleAssignTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := a.db.InsertUserTeams(userTeams); err != nil {
+		handleError(w, err, "error while assigning user teams in handleAssignTeams", http.StatusInternalServerError)
 		return
 	}
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Teams assigned to users successfully",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleAssignUserTeams: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
+
 }
 
 func (a *APIHandler) handleAssignUserPerms(w http.ResponseWriter, r *http.Request) {
-	// Parse request body to userPerms slice
 	var userPerms []types.UserPerms
-	err := json.NewDecoder(r.Body).Decode(&userPerms)
-	if err != nil {
-		err = fmt.Errorf("error while decoding user teams in handleAssignUserPerms: %s", err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&userPerms); err != nil {
+		handleError(w, err, "error while decoding user teams in handleAssignUserPerms", http.StatusBadRequest)
 		return
 	}
 
-	err = a.db.InsertUserPerms(userPerms)
-	if err != nil {
-		err = fmt.Errorf("error while assigning user teams in handleAssignUserPerms: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err := a.db.InsertUserPerms(userPerms); err != nil {
+		handleError(w, err, "error while assigning user teams in handleAssignUserPerms", http.StatusInternalServerError)
 		return
 	}
 
-	// Set token in Authorization header
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Return success response
-	response := map[string]string{
+	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Users permissions assigned successfully",
-	}
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		err = fmt.Errorf("error while writing response in handleAssignUserPerms: %s", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	})
 }

@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/jmoiron/sqlx"
@@ -26,6 +27,7 @@ func InitSqlx(dbConfig *config.Database) (*sqlx.DB, error) {
 
 	sqlx.SetMaxOpenConns(dbConfig.MaxopenConns)
 	sqlx.SetMaxIdleConns(dbConfig.MaxIdleConns)
+	sqlx.SetConnMaxIdleTime(1 * time.Second)
 
 	// Test the connection
 	err = sqlx.Ping()
