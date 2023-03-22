@@ -69,14 +69,11 @@ func (a *APIHandler) handleCreateTeams(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err, "error while decoding teams in handleCreateTeams", http.StatusBadRequest)
 		return
 	}
-	fmt.Println("before: ", a.db.Sqlx.Ping())
 
 	if err := a.db.InsertTeams(teams); err != nil {
 		handleError(w, err, "error while creating teams in handleCreateTeams", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println("after: ", a.db.Sqlx.Ping())
 
 	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Teams created successfully",
@@ -90,15 +87,10 @@ func (a *APIHandler) handleCreateCampus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	fmt.Println("before: ", a.db.Sqlx.Ping())
-
 	if err := a.db.InsertCampus(campuses); err != nil {
 		handleError(w, err, "error while creating campuses in handleCreateCampus", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println("after: ", a.db.Sqlx.Ping())
-
 	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Campus created successfully",
 	})
