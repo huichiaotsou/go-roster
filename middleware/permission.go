@@ -15,7 +15,6 @@ func (m *Middleware) CheckUserPerm(next http.Handler) http.Handler {
 		if !verified {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
-
 		}
 		// If user has permission, call the next handler
 		next.ServeHTTP(w, r)
@@ -51,7 +50,7 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 }
 
 // Admin Permission
-func (m *Middleware) CheckAdminOrSuperPerm(next http.Handler) http.Handler {
+func (m *Middleware) CheckAdminOrSuperuserPerm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check user's permission based on the request context
 		if m.hasTeamAdminPermission(r) || m.hasSuperUserPermission(r) {

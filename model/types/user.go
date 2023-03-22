@@ -20,8 +20,3 @@ type DbPermission struct {
 	TeamID         string `db:"team_id"`
 	PermissionName string `db:"permission_name"`
 }
-
-type DbTeamPermission struct {
-	TeamID         int64  `db:"team_id"`
-	PermissionName string `db:"permission_name"`
-}

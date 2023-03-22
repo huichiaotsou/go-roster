@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	dbtypes "github.com/huichiaotsou/go-roster/model/types"
 	"github.com/huichiaotsou/go-roster/types"
@@ -53,9 +54,9 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 }
 
 func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission, error) {
-	stmt := "SELECT team_id, permission_name FROM permissions WHERE user_id=$1"
-	var teamPerms []dbtypes.DbTeamPermission
-	err := db.Sqlx.QueryRow(stmt, userID).Scan(&teamPerms)
+	// stmt := "SELECT * FROM permissions WHERE user_id=$1"
+	var teamPerms []dbtypes.DbPermission
+	err := db.Sqlx.Select(&teamPerms, "SELECT * FROM permissions WHERE user_id = $1", userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -65,7 +66,8 @@ func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission,
 
 	var teamPermsType []*types.TeamPermission
 	for _, t := range teamPerms {
-		teamPermsType = append(teamPermsType, types.NewTeamPermission(t.TeamID, t.PermissionName))
+		teamID, _ := strconv.ParseInt(t.TeamID, 10, 64)
+		teamPermsType = append(teamPermsType, types.NewTeamPermission(teamID, t.PermissionName))
 	}
 	return teamPermsType, nil
 }

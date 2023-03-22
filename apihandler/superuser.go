@@ -21,6 +21,7 @@ func (a *APIHandler) SetSuperUserRoutes() {
 
 	// Requires super user permission
 	superPermRouter := a.router.PathPrefix(superuserAPI).Subrouter()
+	// To-do: to enable
 	// superPermRouter.Use(a.mw.CheckSuperPerm)
 
 	superPermRouter.HandleFunc("/{user_id}", a.handleEnableSuperuser).Methods(http.MethodPut)
@@ -91,6 +92,7 @@ func (a *APIHandler) handleCreateCampus(w http.ResponseWriter, r *http.Request) 
 		handleError(w, err, "error while creating campuses in handleCreateCampus", http.StatusInternalServerError)
 		return
 	}
+
 	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Campus created successfully",
 	})
