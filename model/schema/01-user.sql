@@ -20,27 +20,26 @@ CREATE TABLE teams (
     team_name   VARCHAR(50) NOT NULL UNIQUE
 );
 
--- Define the user_teams table to indicate WHO is in WHICH TEAM
--- 1 user can be in more than 1 team
-CREATE TABLE user_teams (
+-- Define the permissions table to store the access level along with team(s)
+-- permission is defined by the admin
+CREATE TABLE perms (
+    id                  SERIAL      PRIMARY KEY,
+    permission_name     VARCHAR(50) UNIQUE NOT NULL -- admin, leader, volunteer...
+);
+
+-- Define the user_teams_perms table to indicate WHO is in WHICH TEAM and has WHAT PERMISSIONS
+-- 1 user can be in more than 1 team 
+CREATE TABLE user_teams_perms (
     user_id     INT         NOT NULL REFERENCES users(id),
     team_id     INT         NOT NULL REFERENCES teams(id),
+    perm_id     INT         NOT NULL REFERENCES perms(id),
 
     -- notes can be used to specify the special role within the team
     notes       TEXT        NOT NULL DEFAULT '',
 
-    UNIQUE (user_id, team_id)
+    UNIQUE (user_id, team_id, perm_id)
 );
 
--- Define the permissions table to store the access level along with team(s)
--- permission is defined by the admin
-CREATE TABLE permissions (
-    user_id             INT         NOT NULL REFERENCES users(id),
-    team_id             INT         NOT NULL REFERENCES teams(id),
-    permission_name     VARCHAR(50) NOT NULL, -- admin, leader, volunteer...
-    
-    UNIQUE (user_id, team_id)
-);
 
 -- Define the functions table to store the functions of the users: Vox 1, Vox 2, KB 1, MD...
 -- 1 user can take more than 1 function

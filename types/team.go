@@ -13,20 +13,24 @@ type UserTeams struct {
 	TeamIDs []int64 `json:"teamIDs"`
 }
 
-type UserPerms struct {
-	UserID         int64  `json:"userID"`
-	TeamID         int64  `json:"teamID"`
-	PermissionName string `json:"permissionName"`
+type Permissions struct {
+	PermissionNames []string `json:"permissionNames"`
+}
+
+type UserTeamPerm struct {
+	UserID       int64 `json:"userID"`
+	TeamID       int64 `json:"teamID"`
+	PermissionID int64 `json:"permissionID"`
 }
 
 type TeamPermission struct {
-	TeamID         int64  `json:"teamID"`
-	PermissionName string `json:"permissionName"`
+	TeamID       int64 `json:"teamID"`
+	PermissionID int64 `json:"permissionID"`
 }
 
-func NewTeamPermission(teamID int64, permissionName string) *TeamPermission {
+func NewTeamPermission(teamID int64, permissionID int64) *TeamPermission {
 	return &TeamPermission{
-		TeamID:         teamID,
-		PermissionName: permissionName,
+		TeamID:       teamID,
+		PermissionID: permissionID,
 	}
 }

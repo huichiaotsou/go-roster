@@ -16,7 +16,7 @@ type DbUser struct {
 }
 
 type DbPermission struct {
-	UserID         string `db:"user_id"`
-	TeamID         string `db:"team_id"`
-	PermissionName string `db:"permission_name"`
+	UserID       string `db:"user_id"`
+	TeamID       string `db:"team_id"`
+	PermissionID string `db:"permission_id"`
 }

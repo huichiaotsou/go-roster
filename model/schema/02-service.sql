@@ -16,7 +16,7 @@ CREATE TABLE service_types (
     team_id             INT             NOT NULL REFERENCES teams(id),
     campus_id           INT             NOT NULL REFERENCES campus(id),
     notes               TEXT            NOT NULL DEFAULT '',
-    UNIQUE(service_name, team_id)
+    UNIQUE(service_name, team_id, campus_id)
 );
 
 CREATE TABLE service_funcs (

@@ -67,7 +67,8 @@ func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission,
 	var teamPermsType []*types.TeamPermission
 	for _, t := range teamPerms {
 		teamID, _ := strconv.ParseInt(t.TeamID, 10, 64)
-		teamPermsType = append(teamPermsType, types.NewTeamPermission(teamID, t.PermissionName))
+		permID, _ := strconv.ParseInt(t.PermissionID, 10, 64)
+		teamPermsType = append(teamPermsType, types.NewTeamPermission(teamID, permID))
 	}
 	return teamPermsType, nil
 }

@@ -30,10 +30,9 @@ func (a *APIHandler) SetSuperUserRoutes() {
 	superPermRouter.HandleFunc("/create_teams", a.handleCreateTeams).Methods(http.MethodPost)
 	superPermRouter.HandleFunc("/create_campus", a.handleCreateCampus).Methods(http.MethodPost)
 
-	// Should merge the below 2 (assign_teams_permissions)
-	// the table permission should contains only the permission ID
-	superPermRouter.HandleFunc("/assign_user_teams", a.handleAssignUserTeams).Methods(http.MethodPost)
-	superPermRouter.HandleFunc("/assign_user_permissions", a.handleAssignUserPerms).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("/define_permissions", a.handleDefinePerms).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("/assign_team_permissions", a.handleAssignTeamPerms).Methods(http.MethodPost)
+	// superPermRouter.HandleFunc("/assign_user_permissions", a.handleAssignUserPerms).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleEnableSuperuser(w http.ResponseWriter, r *http.Request) {
@@ -98,33 +97,33 @@ func (a *APIHandler) handleCreateCampus(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
-func (a *APIHandler) handleAssignUserTeams(w http.ResponseWriter, r *http.Request) {
-	// Parse request body to userTeams struct
-	var userTeams types.UserTeams
-	if err := json.NewDecoder(r.Body).Decode(&userTeams); err != nil {
-		handleError(w, err, "error while decoding user teams in handleAssignTeams", http.StatusBadRequest)
+func (a *APIHandler) handleDefinePerms(w http.ResponseWriter, r *http.Request) {
+	// Parse request body to perms struct
+	var perms types.Permissions
+	if err := json.NewDecoder(r.Body).Decode(&perms); err != nil {
+		handleError(w, err, "error while decoding perms in handleDefinePerms", http.StatusBadRequest)
 		return
 	}
 
-	if err := a.db.InsertUserTeams(userTeams); err != nil {
-		handleError(w, err, "error while assigning user teams in handleAssignTeams", http.StatusInternalServerError)
+	if err := a.db.InsertPerms(perms); err != nil {
+		handleError(w, err, "error while insert perms in handleDefinePerms", http.StatusInternalServerError)
 		return
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{
-		"message": "Teams assigned to users successfully",
+		"message": "Permissions created successfully",
 	})
 
 }
 
-func (a *APIHandler) handleAssignUserPerms(w http.ResponseWriter, r *http.Request) {
-	var userPerms []types.UserPerms
-	if err := json.NewDecoder(r.Body).Decode(&userPerms); err != nil {
+func (a *APIHandler) handleAssignTeamPerms(w http.ResponseWriter, r *http.Request) {
+	var userTeamPerm []types.UserTeamPerm
+	if err := json.NewDecoder(r.Body).Decode(&userTeamPerm); err != nil {
 		handleError(w, err, "error while decoding user teams in handleAssignUserPerms", http.StatusBadRequest)
 		return
 	}
 
-	if err := a.db.InsertUserPerms(userPerms); err != nil {
+	if err := a.db.InsertUserTeamPerms(userTeamPerm); err != nil {
 		handleError(w, err, "error while assigning user teams in handleAssignUserPerms", http.StatusInternalServerError)
 		return
 	}

@@ -67,14 +67,14 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get teamIDs with userID
-	teamPerms, err := a.db.GetTeamPermsByUserID(userID)
-	if err != nil {
-		handleError(w, err, "error while getting user team ID", http.StatusInternalServerError)
-		return
-	}
+	// // Get teamIDs with userID
+	// teamPerms, err := a.db.GetTeamPermsByUserID(userID)
+	// if err != nil {
+	// 	handleError(w, err, "error while getting user team ID", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	token, err := utils.GenerateJWTToken(userID, teamPerms, newUser.Email)
+	token, err := utils.GenerateJWTToken(userID, nil, newUser.Email)
 	if err != nil {
 		handleError(w, err, "error while generating JWT token", http.StatusInternalServerError)
 		return
