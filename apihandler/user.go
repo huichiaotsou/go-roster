@@ -57,7 +57,7 @@ func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Hash user password before storing
-	hashedPwd := types.HashPassword(newUser.PwdOrToken)
+	hashedPwd := utils.HashPassword(newUser.PwdOrToken)
 	newUser.PwdOrToken = hashedPwd
 
 	// Insert new user into database
@@ -103,7 +103,7 @@ func (a *APIHandler) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Hash user password before storing
-	hashedPwd := types.HashPassword(user.PwdOrToken)
+	hashedPwd := utils.HashPassword(user.PwdOrToken)
 	user.PwdOrToken = hashedPwd
 
 	// Insert new user into database
