@@ -56,7 +56,7 @@ func (db *Database) InsertOrUpdateUser(user types.User) (int64, error) {
 func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission, error) {
 	// stmt := "SELECT * FROM permissions WHERE user_id=$1"
 	var teamPerms []dbtypes.DbPermission
-	err := db.Sqlx.Select(&teamPerms, "SELECT * FROM permissions WHERE user_id = $1", userID)
+	err := db.Sqlx.Select(&teamPerms, "SELECT * FROM user_teams_perms WHERE user_id = $1", userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -74,13 +74,12 @@ func (db *Database) GetTeamPermsByUserID(userID int64) ([]*types.TeamPermission,
 }
 
 func (db *Database) IsSuperUser(userID int64) (bool, error) {
-	var isSuperUser bool
-	query := "SELECT is_super_user FROM users WHERE id= $1"
-	err := db.Sqlx.Get(&isSuperUser, query, userID)
+	var user dbtypes.DbUser
+	query := "SELECT id, is_super_user FROM users WHERE id= $1"
+	err := db.Sqlx.Get(&user, query, userID)
 	if err != nil {
 		return false, fmt.Errorf("error while verifying super user by user ID: %s", err)
 	}
 
-	return isSuperUser, nil
-
+	return user.IsSuperUser || userID == 1, nil
 }

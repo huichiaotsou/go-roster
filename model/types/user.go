@@ -13,10 +13,12 @@ type DbUser struct {
 	PwdHashOrToken string    `db:"pwd_hash_or_token"`
 	DateOfBirth    string    `db:"date_of_birth"`
 	CreatedDate    time.Time `db:"created_date"`
+	IsSuperUser    bool      `db:"is_super_user"`
 }
 
 type DbPermission struct {
 	UserID       string `db:"user_id"`
 	TeamID       string `db:"team_id"`
-	PermissionID string `db:"permission_id"`
+	PermissionID string `db:"perm_id"`
+	Notes        string `db:"notes"`
 }
