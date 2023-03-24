@@ -17,7 +17,7 @@ func (a *APIHandler) SetFuncRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
 	functionAPI := apiVersion + FUNCTION_ROUTE // /api/v1/service_type
 
-	// Requires team admin or superuser permission
+	// Requires superuser permission
 	functionRouter := a.router.PathPrefix(functionAPI).Subrouter()
 	functionRouter.Use(a.mw.CheckSuperPerm)
 
@@ -25,7 +25,7 @@ func (a *APIHandler) SetFuncRoutes() {
 }
 
 func (a *APIHandler) handleCreateFunctions(w http.ResponseWriter, r *http.Request) {
-	var funcs types.Functions
+	var funcs types.FunctionData
 	if err := json.NewDecoder(r.Body).Decode(&funcs); err != nil {
 		handleError(w, err, "error while decoding funcs", http.StatusBadRequest)
 		return
