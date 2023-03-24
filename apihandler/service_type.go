@@ -25,6 +25,7 @@ func (a *APIHandler) SetServiceTypeRoutes() {
 
 	serviceTypeRouter.HandleFunc("/team/{team_id}", a.handleCreateServiceType).Methods(http.MethodPost)
 	serviceTypeRouter.HandleFunc("/{service_type_id}", a.handleDeleteServiceType).Methods(http.MethodDelete)
+	serviceTypeRouter.HandleFunc("/{service_type_id}/funcs", a.handleSetServiceTypeFuncs).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleCreateServiceType(w http.ResponseWriter, r *http.Request) {
@@ -60,4 +61,8 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 	respondWithJSON(w, http.StatusOK, map[string]string{
 		"message": "Servie type deleted",
 	})
+}
+
+func (a *APIHandler) handleSetServiceTypeFuncs(w http.ResponseWriter, r *http.Request) {
+
 }

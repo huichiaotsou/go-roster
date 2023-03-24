@@ -29,4 +29,5 @@ func (a *APIHandler) RegisterAllRoutes() {
 	a.SetUserRoutes()
 	a.SetSuperUserRoutes()
 	a.SetServiceTypeRoutes()
+	a.SetFuncRoutes()
 }
