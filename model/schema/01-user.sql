@@ -19,6 +19,8 @@ CREATE TABLE teams (
     id          SERIAL      PRIMARY KEY,
     team_name   VARCHAR(50) NOT NULL UNIQUE
 );
+INSERT INTO teams (team_name) VALUES ('Worship');
+INSERT INTO teams (team_name) VALUES ('Sound');
 
 -- Define the permissions table to store the access level along with team(s)
 -- permission is defined by the admin
@@ -26,6 +28,8 @@ CREATE TABLE perms (
     id                  SERIAL      PRIMARY KEY,
     permission_name     VARCHAR(50) UNIQUE NOT NULL -- admin, leader, volunteer...
 );
+INSERT INTO perms (permission_name) VALUES ('admin');
+INSERT INTO perms (permission_name) VALUES ('volunteer');
 
 -- Define the user_teams_perms table to indicate WHO is in WHICH TEAM and has WHAT PERMISSIONS
 -- 1 user can be in more than 1 team 

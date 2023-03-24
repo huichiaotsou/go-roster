@@ -35,9 +35,7 @@ func (a *APIHandler) SetSuperUserRoutes() {
 }
 
 func (a *APIHandler) handleEnableSuperuser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userID := vars["user_id"]
-
+	userID := mux.Vars(r)["user_id"]
 	if err := a.db.UpdateIsSuperuser(userID, true); err != nil {
 		handleError(w, err, "error while enabling super user in handleEnableSuperuser", http.StatusInternalServerError)
 		return
@@ -49,9 +47,7 @@ func (a *APIHandler) handleEnableSuperuser(w http.ResponseWriter, r *http.Reques
 }
 
 func (a *APIHandler) handleDisableSuperuser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userID := vars["user_id"]
-
+	userID := mux.Vars(r)["user_id"]
 	if err := a.db.UpdateIsSuperuser(userID, false); err != nil {
 		handleError(w, err, "error while disabling super user in handleDisableSuperuser", http.StatusInternalServerError)
 		return

@@ -2,6 +2,9 @@ CREATE TABLE campus (
     id              SERIAL PRIMARY KEY,
     campus_name     VARCHAR(50)     NOT NULL UNIQUE
 );
+INSERT INTO campus (campus_name) VALUES ('Taipei Campus');
+INSERT INTO campus (campus_name) VALUES ('Taichung Campus');
+
 
 CREATE TABLE service_types (
     id                  SERIAL PRIMARY KEY,
@@ -18,6 +21,11 @@ CREATE TABLE service_types (
     notes               TEXT            NOT NULL DEFAULT '',
     UNIQUE(service_name, team_id, campus_id)
 );
+INSERT INTO service_types (
+    service_name, service_day, call_time, call_time_day, preparation_time, preparation_day, service_time_start, service_time_end, team_id, campus_id, notes)
+VALUES (
+    'Sunday Service', 'sunday', '07:00:00', 'sunday', '15:30:00', 'saturday', '09:30:00', '15:45:00', 1, 1, 'This is a note.');
+
 
 CREATE TABLE service_funcs (
     service_type_id     INT         NOT NULL    REFERENCES service_types(id),

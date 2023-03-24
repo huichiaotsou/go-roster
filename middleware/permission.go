@@ -1,8 +1,11 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/huichiaotsou/go-roster/types"
 	"github.com/huichiaotsou/go-roster/utils"
 )
@@ -34,6 +37,19 @@ func (m *Middleware) CheckSuperPerm(next http.Handler) http.Handler {
 	})
 }
 
+// Admin Permission
+func (m *Middleware) TeamAdminOrSuperuserPerm(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check user's permission based on the request context
+		if m.hasTeamAdminPermission(r) || m.hasSuperUserPermission(r) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Error(w, "Forbidden", http.StatusForbidden)
+	})
+}
+
 func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 	claims, verified := utils.VerifyJWTToken(r)
 	if !verified {
@@ -49,38 +65,24 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 	return true
 }
 
-// Admin Permission
-func (m *Middleware) CheckAdminOrSuperuserPerm(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Check user's permission based on the request context
-		if m.hasTeamAdminPermission(r) || m.hasSuperUserPermission(r) {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		http.Error(w, "Forbidden", http.StatusForbidden)
-	})
-}
-
 func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
-	// claims, verified := utils.VerifyJWTToken(r)
-	// if !verified {
-	// 	return false
-	// }
-	// if claims[types.TeamPermsClaim] == nil {
-	// 	return false
-	// }
+	claims, verified := utils.VerifyJWTToken(r)
+	if !verified {
+		return false
+	}
 
-	// userID := claims[types.UserIDclaim].(float64)
-	// teamPermsClaims := claims[types.TeamPermsClaim].([]types.TeamPermission)
+	userID := int64(claims[types.UserIDclaim].(float64))
+	teamID, _ := strconv.ParseInt(mux.Vars(r)["team_id"], 10, 64)
 
-	// // Parse request body to Teams slice
-	// var teamPerms []types.TeamPermission
-	// err := json.NewDecoder(r.Body).Decode(&teamPerms)
-	// if err != nil {
-	// 	err = fmt.Errorf("error while decoding teams in handleCreateTeams: %s", err)
-	// 	return false
-	// }
+	perm, err := m.Db.GetUserTeamPerm(userID, teamID)
+	if err != nil {
+		log.Fatalf("error while getting user team perm: %s", err)
+		return false
+	}
+
+	if perm == "admin" {
+		return true
+	}
 
 	return false
 }

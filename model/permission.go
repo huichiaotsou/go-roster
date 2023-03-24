@@ -52,3 +52,18 @@ func (db *Database) InsertUserTeamPerms(userPerms []types.UserTeamPerm) error {
 
 	return nil
 }
+
+func (db *Database) GetUserTeamPerm(userID int64, teamID int64) (string, error) {
+	stmt := `SELECT p.permission_name 
+	FROM user_teams_perms utp 
+	JOIN perms p ON utp.perm_id = p.id 
+	WHERE utp.user_id = $1 AND utp.team_id = $2`
+
+	var perm string
+	err := db.Sqlx.Get(&perm, stmt, userID, teamID)
+	if err != nil {
+		return "", fmt.Errorf("error while getting perm: %s", err)
+	}
+
+	return perm, nil
+}
