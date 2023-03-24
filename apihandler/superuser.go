@@ -31,7 +31,6 @@ func (a *APIHandler) SetSuperUserRoutes() {
 
 	superPermRouter.HandleFunc("/define_permissions", a.handleDefinePerms).Methods(http.MethodPost)
 	superPermRouter.HandleFunc("/assign_team_permissions", a.handleAssignTeamPerms).Methods(http.MethodPost)
-	// superPermRouter.HandleFunc("/assign_user_permissions", a.handleAssignUserPerms).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleEnableSuperuser(w http.ResponseWriter, r *http.Request) {

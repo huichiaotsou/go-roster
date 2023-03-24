@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -76,7 +75,6 @@ func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
 
 	perm, err := m.Db.GetUserTeamPerm(userID, teamID)
 	if err != nil {
-		log.Fatalf("error while getting user team perm: %s", err)
 		return false
 	}
 

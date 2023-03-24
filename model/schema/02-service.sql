@@ -24,7 +24,7 @@ CREATE TABLE service_types (
 INSERT INTO service_types (
     service_name, service_day, call_time, call_time_day, preparation_time, preparation_day, service_time_start, service_time_end, team_id, campus_id, notes)
 VALUES (
-    'Sunday Service', 'sunday', '07:00:00', 'sunday', '15:30:00', 'saturday', '09:30:00', '15:45:00', 1, 1, 'This is a note.');
+    'Sunday Service', 'sunday', '07:00:00', 'sunday', '15:30:00', 'saturday', '09:30:00', '15:45:00', 1, 1, '主日');
 
 
 CREATE TABLE service_funcs (
