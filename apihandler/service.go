@@ -1,7 +1,7 @@
 package apihandler
 
 var (
-	SERVICE_ROUT = "/service"
+	SERVICE_ROUTE = "/service"
 )
 
 func (a *APIHandler) SetServiceRoutes() {

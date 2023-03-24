@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	SUPERUSER_API = "/superuser"
+	SUPERUSER_ROUTE = "/superuser"
 )
 
 // /api/v1/super
 func (a *APIHandler) SetSuperUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	superuserAPI := apiVersion + SUPERUSER_API // /api/v1/superuser
+	superuserAPI := apiVersion + SUPERUSER_ROUTE // /api/v1/superuser
 
 	// Requires super user permission
 	superPermRouter := a.router.PathPrefix(superuserAPI).Subrouter()

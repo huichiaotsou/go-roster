@@ -11,13 +11,13 @@ import (
 )
 
 var (
-	USER_ROUT = "/user"
+	USER_ROUTE = "/user"
 )
 
 // /api/v1/user or  /api/v1/user/{id}
 func (a *APIHandler) SetUserRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
-	userAPI := apiVersion + USER_ROUT
+	userAPI := apiVersion + USER_ROUTE
 
 	// Handle create user
 	a.router.HandleFunc(userAPI, a.handleCreateUser).Methods(http.MethodPost)
