@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/types"
+	"github.com/huichiaotsou/go-roster/utils"
 )
 
 var (
@@ -51,15 +52,33 @@ func (a *APIHandler) handleCreateServiceType(w http.ResponseWriter, r *http.Requ
 }
 
 func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.ParseInt(mux.Vars(r)["service_type_id"], 10, 64)
+	stID, err := strconv.ParseInt(mux.Vars(r)["service_type_id"], 10, 64)
+	if err != nil {
+		handleError(w, err, "error while parsing service_type_id in handleDeleteServiceType", http.StatusBadRequest)
+		return
+	}
 
-	if err := a.db.DeleteServiceType(id); err != nil {
-		handleError(w, err, "error while inserting new service type in handleCreateServiceType", http.StatusInternalServerError)
+	// Get the team_id by the service type ID
+	teamID, err := a.db.GetTeamIDByServiceTypeID(stID)
+	if err != nil {
+		handleError(w, err, "error while getting team ID in handleDeleteServiceType", http.StatusInternalServerError)
+		return
+	}
+
+	// Verify if the user has admin permission to that team
+	pass := utils.VerifyTeamAdminPermission(r, teamID)
+	if !pass {
+		handleError(w, nil, "no team admin permission in handleDeleteServiceType", http.StatusForbidden)
+		return
+	}
+
+	if err := a.db.DeleteServiceType(stID); err != nil {
+		handleError(w, err, "error while deleting service type in handleDeleteServiceType", http.StatusInternalServerError)
 		return
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{
-		"message": "Servie type deleted",
+		"message": "Service type deleted",
 	})
 }
 

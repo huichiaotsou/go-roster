@@ -53,3 +53,12 @@ func (db *Database) DeleteServiceType(id int64) error {
 	}
 	return nil
 }
+
+func (db *Database) GetTeamIDByServiceTypeID(serviceTypeID int64) (int64, error) {
+	var teamID int64
+	err := db.Sqlx.Get(&teamID, "SELECT team_id FROM service_types WHERE id = $1", serviceTypeID)
+	if err != nil {
+		return teamID, fmt.Errorf("error while selecting team id by service type : %s", err)
+	}
+	return teamID, nil
+}
