@@ -16,15 +16,14 @@ CREATE TABLE service_types (
     preparation_day     VARCHAR(50)     NOT NULL DEFAULT '',
     service_time_start  TIME            NOT NULL DEFAULT '07:00:00',
     service_time_end    TIME            NOT NULL DEFAULT '15:45:00',
-    team_id             INT             NOT NULL REFERENCES teams(id),
     campus_id           INT             NOT NULL REFERENCES campus(id),
     notes               TEXT            NOT NULL DEFAULT '',
-    UNIQUE(service_name, team_id, campus_id)
+    UNIQUE(service_name, campus_id)
 );
 INSERT INTO service_types (
-    service_name, service_day, call_time, call_time_day, preparation_time, preparation_day, service_time_start, service_time_end, team_id, campus_id, notes)
+    service_name, service_day, call_time, call_time_day, preparation_time, preparation_day, service_time_start, service_time_end, campus_id, notes)
 VALUES (
-    'Sunday Service', 'sunday', '07:00:00', 'sunday', '15:30:00', 'saturday', '09:30:00', '15:45:00', 1, 1, '主日');
+    'Sunday Service', 'sunday', '07:00:00', 'sunday', '15:30:00', 'saturday', '09:30:00', '15:45:00', 1, '主日');
 
 
 CREATE TABLE service_funcs (

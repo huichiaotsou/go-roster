@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/huichiaotsou/go-roster/config"
 	"github.com/huichiaotsou/go-roster/types"
-	"github.com/huichiaotsou/go-roster/utils"
 )
 
 var (
@@ -36,11 +35,6 @@ func (a *APIHandler) handleCreateServiceType(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if newServiceType.TeamID != mux.Vars(r)["team_id"] {
-		handleError(w, nil, "team id not identical", http.StatusBadRequest)
-		return
-	}
-
 	if err := a.db.UpsertServiceType(newServiceType); err != nil {
 		handleError(w, err, "error while inserting new service type in handleCreateServiceType", http.StatusInternalServerError)
 		return
@@ -58,19 +52,19 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Get the team_id by the service type ID
-	teamID, err := a.db.GetTeamIDByServiceTypeID(stID)
-	if err != nil {
-		handleError(w, err, "error while getting team ID in handleDeleteServiceType", http.StatusInternalServerError)
-		return
-	}
+	// // Get the team_id by the service type ID
+	// teamID, err := a.db.GetTeamIDByServiceTypeID(stID)
+	// if err != nil {
+	// 	handleError(w, err, "error while getting team ID in handleDeleteServiceType", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	// Verify if the user has admin permission to that team
-	pass := utils.VerifyTeamAdminPermission(r, teamID)
-	if !pass {
-		handleError(w, nil, "no team admin permission in handleDeleteServiceType", http.StatusForbidden)
-		return
-	}
+	// // Verify if the user has admin permission to that team
+	// pass := utils.VerifyTeamAdminPermission(r, teamID)
+	// if !pass {
+	// 	handleError(w, nil, "no team admin permission in handleDeleteServiceType", http.StatusForbidden)
+	// 	return
+	// }
 
 	if err := a.db.DeleteServiceType(stID); err != nil {
 		handleError(w, err, "error while deleting service type in handleDeleteServiceType", http.StatusInternalServerError)
@@ -83,5 +77,6 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 }
 
 func (a *APIHandler) handleSetServiceTypeFuncs(w http.ResponseWriter, r *http.Request) {
-
+	// Verifi if the team_id in the input
+	// Verify if the admin has the permission to the team of the func to be set
 }

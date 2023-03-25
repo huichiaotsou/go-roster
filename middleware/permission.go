@@ -34,19 +34,6 @@ func (m *Middleware) SuperPerm(next http.Handler) http.Handler {
 	})
 }
 
-// // Admin Permission
-// func (m *Middleware) TeamAdminPerm(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		// Check user's permission based on the request context
-// 		if m.hasTeamAdminPermission(r) {
-// 			next.ServeHTTP(w, r)
-// 			return
-// 		}
-
-// 		http.Error(w, "Forbidden", http.StatusForbidden)
-// 	})
-// }
-
 func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 	claims, verified := utils.VerifyJWTToken(r)
 	if !verified {
@@ -61,26 +48,3 @@ func (m *Middleware) hasSuperUserPermission(r *http.Request) bool {
 
 	return true
 }
-
-// // hasTeamAdminPermission verifies if the person modifying the record is the team admin
-// // if this middleware is in use, the query param "/team/{team_id}" must be specified
-// func (m *Middleware) hasTeamAdminPermission(r *http.Request) bool {
-// 	claims, verified := utils.VerifyJWTToken(r)
-// 	if !verified {
-// 		return false
-// 	}
-
-// 	userID := int64(claims[types.UserIDclaim].(float64))
-// 	teamID, _ := strconv.ParseInt(mux.Vars(r)["team_id"], 10, 64)
-
-// 	perm, err := m.Db.GetUserTeamPerm(userID, teamID)
-// 	if err != nil {
-// 		return false
-// 	}
-
-// 	if perm == "admin" {
-// 		return true
-// 	}
-
-// 	return false
-// }

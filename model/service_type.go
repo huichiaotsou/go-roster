@@ -12,9 +12,9 @@ func (db *Database) UpsertServiceType(st types.ServiceType) error {
         INSERT INTO service_types (
             service_name, service_day, call_time, call_time_day,
             preparation_time, preparation_day, service_time_start,
-            service_time_end, team_id, campus_id, notes
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
-		ON CONFLICT (service_name, team_id, campus_id) DO UPDATE SET
+            service_time_end, campus_id, notes
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+		ON CONFLICT (service_name, campus_id) DO UPDATE SET
 			service_day = EXCLUDED.service_day,
 			call_time = EXCLUDED.call_time,
 			call_time_day = EXCLUDED.call_time_day,
@@ -35,7 +35,6 @@ func (db *Database) UpsertServiceType(st types.ServiceType) error {
 		st.PreparationDay,
 		st.ServiceTimeStart,
 		st.ServiceTimeEnd,
-		st.TeamID,
 		st.CampusID,
 		st.Notes,
 	)

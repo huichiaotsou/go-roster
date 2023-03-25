@@ -9,7 +9,6 @@ type ServiceType struct {
 	PreparationDay   string `json:"preparation_day"`
 	ServiceTimeStart string `json:"service_time_start"`
 	ServiceTimeEnd   string `json:"service_time_end"`
-	TeamID           string `json:"team_id"`
 	CampusID         string `json:"campus_id"`
 	Notes            string `json:"notes"`
 }
