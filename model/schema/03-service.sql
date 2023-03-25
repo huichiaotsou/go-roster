@@ -39,10 +39,11 @@ CREATE TABLE seasons (
     season  VARCHAR(20)     NOT NULL
 );
 
-CREATE TABLE service_dates (
+CREATE TABLE services (
     id                  SERIAL PRIMARY KEY,
     service_date        DATE            NOT NULL,
     service_type_id     INT             NOT NULL REFERENCES service_types(id),
+    team_id             INT             NOT NULL REFERENCES teams(id),
     season_id           INT             NOT NULL REFERENCES seasons(id),
     notes               TEXT            NOT NULL DEFAULT '',
     UNIQUE(service_type_id, service_date)

@@ -2,7 +2,7 @@
 CREATE TABLE availabilities (
     id                      SERIAL PRIMARY KEY,
     user_id                 INT     NOT NULL REFERENCES users(id),
-    service_date_id         INT     NOT NULL REFERENCES service_dates(id)
+    service_id              INT     NOT NULL REFERENCES services(id)
 );
 
 CREATE TABLE user_avail_slots (

@@ -4,10 +4,10 @@ CREATE TABLE rosters (
     team_id             INT     NOT NULL REFERENCES teams(id),
     user_id             INT     NOT NULL REFERENCES users(id),
     service_type_id     INT     NOT NULL REFERENCES service_types(id),
-    service_date_id     INT     NOT NULL REFERENCES service_dates(id),
+    service_id          INT     NOT NULL REFERENCES services(id),
     func_id             INT     NOT NULL REFERENCES functions(id),
     notes               TEXT    NOT NULL DEFAULT '',
-    UNIQUE(user_id, service_type_id, service_date_id, func_id)
+    UNIQUE(user_id, service_type_id, service_id, func_id)
 );
 
 CREATE TABLE roster_slots (

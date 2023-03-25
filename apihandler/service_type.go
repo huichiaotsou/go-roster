@@ -23,7 +23,7 @@ func (a *APIHandler) SetServiceTypeRoutes() {
 	superPermRouter := a.router.PathPrefix(serviceTypeAPI).Subrouter()
 	superPermRouter.Use(a.mw.SuperPerm)
 
-	superPermRouter.HandleFunc("/team/{team_id}", a.handleCreateServiceType).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("", a.handleCreateServiceType).Methods(http.MethodPost)
 	superPermRouter.HandleFunc("/{service_type_id}", a.handleDeleteServiceType).Methods(http.MethodDelete)
 	superPermRouter.HandleFunc("/{service_type_id}/funcs", a.handleSetServiceTypeFuncs).Methods(http.MethodPost)
 }
@@ -52,20 +52,6 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// // Get the team_id by the service type ID
-	// teamID, err := a.db.GetTeamIDByServiceTypeID(stID)
-	// if err != nil {
-	// 	handleError(w, err, "error while getting team ID in handleDeleteServiceType", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// // Verify if the user has admin permission to that team
-	// pass := utils.VerifyTeamAdminPermission(r, teamID)
-	// if !pass {
-	// 	handleError(w, nil, "no team admin permission in handleDeleteServiceType", http.StatusForbidden)
-	// 	return
-	// }
-
 	if err := a.db.DeleteServiceType(stID); err != nil {
 		handleError(w, err, "error while deleting service type in handleDeleteServiceType", http.StatusInternalServerError)
 		return
@@ -77,6 +63,5 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 }
 
 func (a *APIHandler) handleSetServiceTypeFuncs(w http.ResponseWriter, r *http.Request) {
-	// Verifi if the team_id in the input
-	// Verify if the admin has the permission to the team of the func to be set
+
 }
