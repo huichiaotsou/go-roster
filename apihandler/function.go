@@ -24,7 +24,7 @@ func (a *APIHandler) SetFuncRoutes() {
 }
 
 func (a *APIHandler) handleCreateFunctions(w http.ResponseWriter, r *http.Request) {
-	var funcs types.FunctionData
+	var funcs types.Functions
 	if err := json.NewDecoder(r.Body).Decode(&funcs); err != nil {
 		handleError(w, err, "error while decoding funcs", http.StatusBadRequest)
 		return

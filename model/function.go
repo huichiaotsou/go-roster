@@ -1,21 +1,16 @@
 package model
 
-import (
-	"fmt"
+// func (db *Database) InsertFunctions(f types.Functions) error {
+// 	stmt := `INSERT INTO functions (team_id, func_name)
+//     SELECT $1, unnest($2::text[])
+//     ON CONFLICT DO NOTHING`
 
-	"github.com/huichiaotsou/go-roster/types"
-	"github.com/lib/pq"
-)
+// 	_, err := db.Sqlx.Exec(stmt, f.TeamID, pq.Array(f.FuncNames))
+// 	if err != nil {
+// 		return fmt.Errorf("error while inserting functions: %s", err)
+// 	}
 
-func (db *Database) InsertFunctions(f types.FunctionData) error {
-	stmt := `INSERT INTO functions (team_id, func_name) 
-    SELECT $1, unnest($2::text[]) 
-    ON CONFLICT DO NOTHING`
+// 	return nil
+// }
 
-	_, err := db.Sqlx.Exec(stmt, f.TeamID, pq.Array(f.FuncNames))
-	if err != nil {
-		return fmt.Errorf("error while inserting functions: %s", err)
-	}
-
-	return nil
-}
+// TO-DO remove team id from functions, to re-writes

@@ -63,5 +63,13 @@ func (a *APIHandler) handleDeleteServiceType(w http.ResponseWriter, r *http.Requ
 }
 
 func (a *APIHandler) handleSetServiceTypeFuncs(w http.ResponseWriter, r *http.Request) {
+	// the input will have :
+	//  - service_type_id
+	//  - func_id
+	//  - team_id
+	//  - is_mandatory
+
+	// the team_id will need to be verified: that the user has admin permission to that team
+	// => can actaully move the verification to middleware
 
 }
