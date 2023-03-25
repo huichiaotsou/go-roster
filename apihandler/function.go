@@ -19,7 +19,7 @@ func (a *APIHandler) SetFuncRoutes() {
 
 	// Requires superuser permission
 	functionRouter := a.router.PathPrefix(functionAPI).Subrouter()
-	functionRouter.Use(a.mw.CheckSuperPerm)
+	functionRouter.Use(a.mw.SuperPerm)
 
 	functionRouter.HandleFunc("", a.handleCreateFunctions).Methods(http.MethodPost)
 }

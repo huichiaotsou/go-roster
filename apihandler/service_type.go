@@ -21,7 +21,7 @@ func (a *APIHandler) SetServiceTypeRoutes() {
 
 	// Requires team admin permission
 	serviceTypeRouter := a.router.PathPrefix(serviceTypeAPI).Subrouter()
-	serviceTypeRouter.Use(a.mw.TeamAdminOrSuperuserPerm)
+	serviceTypeRouter.Use(a.mw.SuperPerm)
 
 	serviceTypeRouter.HandleFunc("/team/{team_id}", a.handleCreateServiceType).Methods(http.MethodPost)
 	serviceTypeRouter.HandleFunc("/{service_type_id}", a.handleDeleteServiceType).Methods(http.MethodDelete)

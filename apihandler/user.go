@@ -27,13 +27,13 @@ func (a *APIHandler) SetUserRoutes() {
 
 	// Update user requires user permission
 	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
-	userPermRouter.Use(a.mw.CheckUserPerm)
+	userPermRouter.Use(a.mw.SuperPerm)
 	userPermRouter.HandleFunc("", a.handleUpdateUser).Methods(http.MethodPut)
 
 	// Delete user requires superuser permission
 	withTeamID := apiWithID
 	userTeamRouter := a.router.PathPrefix(withTeamID).Subrouter()
-	userTeamRouter.Use(a.mw.CheckSuperPerm)
+	userTeamRouter.Use(a.mw.SuperPerm)
 	userTeamRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
 }
 

@@ -21,7 +21,7 @@ func (a *APIHandler) SetSuperUserRoutes() {
 
 	// Requires super user permission
 	superPermRouter := a.router.PathPrefix(superuserAPI).Subrouter()
-	superPermRouter.Use(a.mw.CheckSuperPerm)
+	superPermRouter.Use(a.mw.SuperPerm)
 
 	superPermRouter.HandleFunc("/{user_id}", a.handleEnableSuperuser).Methods(http.MethodPut)
 	superPermRouter.HandleFunc("/{user_id}", a.handleDisableSuperuser).Methods(http.MethodDelete)
