@@ -19,13 +19,13 @@ func (a *APIHandler) SetServiceTypeRoutes() {
 	apiVersion := fmt.Sprintf("/api/%s", config.GetApiVersion())
 	serviceTypeAPI := apiVersion + SERVICE_TYPE_ROUTE // /api/v1/service_type
 
-	// Requires team admin permission
-	serviceTypeRouter := a.router.PathPrefix(serviceTypeAPI).Subrouter()
-	serviceTypeRouter.Use(a.mw.SuperPerm)
+	// Requires superuser permission
+	superPermRouter := a.router.PathPrefix(serviceTypeAPI).Subrouter()
+	superPermRouter.Use(a.mw.SuperPerm)
 
-	serviceTypeRouter.HandleFunc("/team/{team_id}", a.handleCreateServiceType).Methods(http.MethodPost)
-	serviceTypeRouter.HandleFunc("/{service_type_id}", a.handleDeleteServiceType).Methods(http.MethodDelete)
-	serviceTypeRouter.HandleFunc("/{service_type_id}/funcs", a.handleSetServiceTypeFuncs).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("/team/{team_id}", a.handleCreateServiceType).Methods(http.MethodPost)
+	superPermRouter.HandleFunc("/{service_type_id}", a.handleDeleteServiceType).Methods(http.MethodDelete)
+	superPermRouter.HandleFunc("/{service_type_id}/funcs", a.handleSetServiceTypeFuncs).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleCreateServiceType(w http.ResponseWriter, r *http.Request) {

@@ -18,10 +18,9 @@ func (a *APIHandler) SetFuncRoutes() {
 	functionAPI := apiVersion + FUNCTION_ROUTE // /api/v1/service_type
 
 	// Requires superuser permission
-	functionRouter := a.router.PathPrefix(functionAPI).Subrouter()
-	functionRouter.Use(a.mw.SuperPerm)
-
-	functionRouter.HandleFunc("", a.handleCreateFunctions).Methods(http.MethodPost)
+	superPermRouter := a.router.PathPrefix(functionAPI).Subrouter()
+	superPermRouter.Use(a.mw.SuperPerm)
+	superPermRouter.HandleFunc("", a.handleCreateFunctions).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleCreateFunctions(w http.ResponseWriter, r *http.Request) {

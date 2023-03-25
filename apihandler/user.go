@@ -21,20 +21,17 @@ func (a *APIHandler) SetUserRoutes() {
 
 	// Handle create user
 	a.router.HandleFunc(userAPI, a.handleCreateUser).Methods(http.MethodPost)
-
-	// Apply permission middlewares to sub router
 	apiWithID := fmt.Sprintf(userAPI + "/{id}")
 
 	// Update user requires user permission
 	userPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
-	userPermRouter.Use(a.mw.SuperPerm)
+	userPermRouter.Use(a.mw.UserPerm)
 	userPermRouter.HandleFunc("", a.handleUpdateUser).Methods(http.MethodPut)
 
 	// Delete user requires superuser permission
-	withTeamID := apiWithID
-	userTeamRouter := a.router.PathPrefix(withTeamID).Subrouter()
-	userTeamRouter.Use(a.mw.SuperPerm)
-	userTeamRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
+	superPermRouter := a.router.PathPrefix(apiWithID).Subrouter()
+	superPermRouter.Use(a.mw.SuperPerm)
+	superPermRouter.HandleFunc("", a.handleDeleteUser).Methods(http.MethodDelete)
 }
 
 func (a *APIHandler) handleCreateUser(w http.ResponseWriter, r *http.Request) {

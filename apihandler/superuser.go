@@ -25,10 +25,8 @@ func (a *APIHandler) SetSuperUserRoutes() {
 
 	superPermRouter.HandleFunc("/{user_id}", a.handleEnableSuperuser).Methods(http.MethodPut)
 	superPermRouter.HandleFunc("/{user_id}", a.handleDisableSuperuser).Methods(http.MethodDelete)
-
 	superPermRouter.HandleFunc("/create_teams", a.handleCreateTeams).Methods(http.MethodPost)
 	superPermRouter.HandleFunc("/create_campus", a.handleCreateCampus).Methods(http.MethodPost)
-
 	superPermRouter.HandleFunc("/define_permissions", a.handleDefinePerms).Methods(http.MethodPost)
 	superPermRouter.HandleFunc("/assign_team_permissions", a.handleAssignTeamPerms).Methods(http.MethodPost)
 }
