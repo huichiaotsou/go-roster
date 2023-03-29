@@ -21,6 +21,7 @@ func (a *APIHandler) SetFuncRoutes() {
 	superPermRouter := a.router.PathPrefix(functionAPI).Subrouter()
 	superPermRouter.Use(a.mw.SuperPerm)
 	superPermRouter.HandleFunc("", a.handleCreateFunctions).Methods(http.MethodPost)
+	// superPermRouter.HandleFunc("user/{user_id}", a.handleSetUserFuncs).Methods(http.MethodPost)
 }
 
 func (a *APIHandler) handleCreateFunctions(w http.ResponseWriter, r *http.Request) {

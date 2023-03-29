@@ -30,7 +30,8 @@ CREATE TABLE service_funcs (
     service_type_id     INT         NOT NULL    REFERENCES service_types(id),
     func_id             INT         NOT NULL    REFERENCES functions(id),
     team_id             INT         NOT NULL    REFERENCES teams(id),
-    is_mandatory        BOOLEAN     NOT NULL    DEFAULT true,
+    count               INT         NOT NULL    DEFAULT 1,
+    mandatory_count     INT         NOT NULL    DEFAULT 1,
     UNIQUE (service_type_id, func_id)
 );
 

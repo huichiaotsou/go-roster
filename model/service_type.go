@@ -46,9 +46,13 @@ func (db *Database) UpsertServiceType(st types.ServiceType) error {
 }
 
 func (db *Database) DeleteServiceType(id int64) error {
-	_, err := db.Sqlx.Exec("DELETE FROM service_types WHERE id = $1", id)
+	res, err := db.Sqlx.Exec("DELETE FROM service_types WHERE id = $1", id)
 	if err != nil {
 		return fmt.Errorf("error while deleting service type : %s", err)
+	}
+	rowsAffected, _ := res.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("no service type found")
 	}
 	return nil
 }

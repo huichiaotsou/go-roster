@@ -3,7 +3,6 @@
 -- function list is defined by the admin
 CREATE TABLE functions (
     id          SERIAL      PRIMARY KEY,
-    -- team_id     INT         NOT NULL REFERENCES teams(id),
     func_name   VARCHAR(50) NOT NULL UNIQUE
 );
 
