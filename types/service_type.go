@@ -1,14 +1,14 @@
 package types
 
 type ServiceType struct {
-	ServiceName      string `json:"service_name"`
-	ServiceDay       string `json:"service_day"`
-	CallTime         string `json:"call_time"`
-	CallTimeDay      string `json:"call_time_day"`
-	PreparationTime  string `json:"preparation_time"`
-	PreparationDay   string `json:"preparation_day"`
-	ServiceTimeStart string `json:"service_time_start"`
-	ServiceTimeEnd   string `json:"service_time_end"`
-	CampusID         string `json:"campus_id"`
+	ServiceName      string `json:"serviceName"`
+	ServiceDay       string `json:"serviceDay"`
+	CallTime         string `json:"callTime"`
+	CallTimeDay      string `json:"callTimeDay"`
+	PreparationTime  string `json:"preparationTime"`
+	PreparationDay   string `json:"preparationDay"`
+	ServiceTimeStart string `json:"serviceTimeStart"`
+	ServiceTimeEnd   string `json:"serviceTimeEnd"`
+	CampusID         string `json:"campusID"`
 	Notes            string `json:"notes"`
 }

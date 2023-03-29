@@ -1,11 +1,11 @@
 package types
 
 type Teams struct {
-	TeamNames []string `json:"teams"`
+	TeamNames []string `json:"teamNames"`
 }
 
 type Campuses struct {
-	CampusNames []string `json:"campus"`
+	CampusNames []string `json:"campusNames"`
 }
 
 type UserTeams struct {
