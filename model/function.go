@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/huichiaotsou/go-roster/types"
+	"github.com/lib/pq"
 )
 
 func (db *Database) InsertFunctions(f types.Functions) error {
@@ -30,4 +31,25 @@ func (db *Database) InsertFunctions(f types.Functions) error {
 
 }
 
-// TO-DO remove team id from functions, to re-writes
+func (db *Database) ClearUserFuncs(userID int64) error {
+	stmt := "DELETE FROM user_funcs WHERE user_id = $1"
+	_, err := db.Sqlx.Exec(stmt, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *Database) InsertUserFuncs(userID int64, funcIDs []int64) error {
+	stmt := "INSERT INTO user_funcs (user_id, func_id) " +
+		"SELECT $1, unnest($2::int[]) " +
+		"ON CONFLICT (user_id, func_id) DO NOTHING"
+
+	_, err := db.Sqlx.Exec(stmt, userID, pq.Array(funcIDs))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
