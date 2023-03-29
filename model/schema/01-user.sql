@@ -10,6 +10,7 @@ CREATE TABLE users (
     pwd_hash_or_token   TEXT         NOT NULL, -- password hash or OAuth login token
     date_of_birth       DATE         NULL,
     created_date        DATE         NOT NULL DEFAULT CURRENT_DATE,
+    notes               TEXT         NOT NULL DEFAULT '', -- CTW, THC, etc
     is_super_user       BOOLEAN      NOT NULL DEFAULT false
 );
 
