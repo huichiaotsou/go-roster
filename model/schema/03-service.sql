@@ -32,7 +32,7 @@ CREATE TABLE service_funcs (
     team_id             INT         NOT NULL    REFERENCES teams(id),
     count               INT         NOT NULL    DEFAULT 1,
     mandatory_count     INT         NOT NULL    DEFAULT 1,
-    UNIQUE (service_type_id, func_id)
+    UNIQUE (service_type_id, func_id, team_id)
 );
 
 CREATE TABLE seasons (
