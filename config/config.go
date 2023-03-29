@@ -4,30 +4,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	cfg *Config
-)
-
-// Config represents the configuration values
-type Config struct {
-	Database   *Database `mapstructure:"database"`
-	Port       string    `mapstructure:"port"`
-	Env        string    `mapstructure:"env"`
-	APIVersion string    `mapstructure:"apiVersion"`
-	JwtKey     string    `mapstructure:"jwtKey"`
-}
-
-type Database struct {
-	Host         string `mapstructure:"host"`
-	Port         string `mapstructure:"port"`
-	Name         string `mapstructure:"name"`
-	Username     string `mapstructure:"username"`
-	Password     string `mapstructure:"password"`
-	Schema       string `mapstructure:"schema"`
-	MaxopenConns int    `mapstructure:"max_open_connections"`
-	MaxIdleConns int    `mapstructure:"max_idle_connections"`
-}
-
 // LoadConfig loads the configuration values from the config file
 func LoadConfig() (err error) {
 	viper.SetConfigName("config")
@@ -43,4 +19,20 @@ func LoadConfig() (err error) {
 	}
 
 	return nil
+}
+
+func GetApiVersion() string {
+	return cfg.APIVersion
+}
+
+func GetJwtKey() string {
+	return cfg.JwtKey
+}
+
+func GetDBConfig() *Database {
+	return cfg.Database
+}
+
+func GetServerPort() string {
+	return cfg.Port
 }
